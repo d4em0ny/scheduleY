@@ -1,0 +1,20 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: scheduley_postgres
+    environment:
+      POSTGRES_USER: scheduley
+      POSTGRES_PASSWORD: scheduley_password
+      POSTGRES_DB: scheduley_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U scheduley -d scheduley_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
