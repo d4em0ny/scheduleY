@@ -45,10 +45,10 @@ class InterdepartmentalRequest(Base):
         CheckConstraint("required_hours > 0", name="chk_interdept_required_hours_positive"),
     )
 
-    offering: Mapped["CourseOffering"] = relationship("CourseOffering", back_populates="requests")
-    requesting_dept: Mapped["Department"] = relationship("Department", foreign_keys=[requesting_dept_id])
-    supplying_dept: Mapped["Department"] = relationship("Department", foreign_keys=[supplying_dept_id])
-    offers: Mapped[List["RequestOffer"]] = relationship("RequestOffer", back_populates="request", cascade="all, delete-orphan")
+    offering: Mapped["CourseOffering"] = relationship("CourseOffering", back_populates="requests", lazy="selectin")
+    requesting_dept: Mapped["Department"] = relationship("Department", foreign_keys=[requesting_dept_id], lazy="selectin")
+    supplying_dept: Mapped["Department"] = relationship("Department", foreign_keys=[supplying_dept_id], lazy="selectin")
+    offers: Mapped[List["RequestOffer"]] = relationship("RequestOffer", back_populates="request", cascade="all, delete-orphan", lazy="selectin")
 
 
 class RequestOffer(Base):
@@ -73,5 +73,5 @@ class RequestOffer(Base):
         CheckConstraint("offered_hours > 0", name="chk_offer_hours_positive"),
     )
 
-    request: Mapped["InterdepartmentalRequest"] = relationship("InterdepartmentalRequest", back_populates="offers")
-    instructor: Mapped["Instructor"] = relationship("Instructor", back_populates="offers")
+    request: Mapped["InterdepartmentalRequest"] = relationship("InterdepartmentalRequest", back_populates="offers", lazy="selectin")
+    instructor: Mapped["Instructor"] = relationship("Instructor", back_populates="offers", lazy="selectin")

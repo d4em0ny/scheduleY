@@ -24,11 +24,11 @@ class Course(Base):
         CheckConstraint("credit_hours > 0", name="chk_course_credit_hours_positive"),
     )
 
-    department: Mapped["Department"] = relationship("Department", back_populates="courses")
+    department: Mapped["Department"] = relationship("Department", back_populates="courses", lazy="selectin")
     components: Mapped[List["CourseComponent"]] = relationship(
-        "CourseComponent", back_populates="course", cascade="all, delete-orphan"
+        "CourseComponent", back_populates="course", cascade="all, delete-orphan", lazy="selectin"
     )
-    offerings: Mapped[List["CourseOffering"]] = relationship("CourseOffering", back_populates="course")
+    offerings: Mapped[List["CourseOffering"]] = relationship("CourseOffering", back_populates="course", lazy="selectin")
 
 
 class CourseComponent(Base):

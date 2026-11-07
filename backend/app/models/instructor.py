@@ -30,15 +30,15 @@ class Instructor(Base):
     )
 
     # Relationships
-    department: Mapped["Department"] = relationship("Department", back_populates="instructors")
+    department: Mapped["Department"] = relationship("Department", back_populates="instructors", lazy="selectin")
     qualifications: Mapped[List["InstructorQualification"]] = relationship(
-        "InstructorQualification", back_populates="instructor", cascade="all, delete-orphan"
+        "InstructorQualification", back_populates="instructor", cascade="all, delete-orphan", lazy="selectin"
     )
     availabilities: Mapped[List["InstructorAvailability"]] = relationship(
-        "InstructorAvailability", back_populates="instructor", cascade="all, delete-orphan"
+        "InstructorAvailability", back_populates="instructor", cascade="all, delete-orphan", lazy="selectin"
     )
-    allocations: Mapped[List["InstructorAllocation"]] = relationship("InstructorAllocation", back_populates="instructor")
-    offers: Mapped[List["RequestOffer"]] = relationship("RequestOffer", back_populates="instructor")
+    allocations: Mapped[List["InstructorAllocation"]] = relationship("InstructorAllocation", back_populates="instructor", lazy="selectin")
+    offers: Mapped[List["RequestOffer"]] = relationship("RequestOffer", back_populates="instructor", lazy="selectin")
 
 
 class InstructorQualification(Base):

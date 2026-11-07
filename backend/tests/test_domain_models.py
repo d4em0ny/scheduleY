@@ -118,6 +118,7 @@ async def test_instructor_and_course_component_models(db_session: AsyncSession):
     )
     db_session.add_all([lecture_comp, tutorial_comp])
     await db_session.flush()
+    await db_session.refresh(course)
 
     assert inst.max_weekly_workload == 12.0
     assert len(course.components) == 2

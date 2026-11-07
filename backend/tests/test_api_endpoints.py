@@ -20,8 +20,10 @@ async def test_health_check():
 
 @pytest.mark.asyncio
 async def test_api_full_setup_workflow(db_session: AsyncSession):
-    # Override FastAPI dependency to use our isolated in-memory test session
-    app.dependency_overrides[get_database_session] = lambda: db_session
+    async def override_get_db():
+        yield db_session
+
+    app.dependency_overrides[get_database_session] = override_get_db
 
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
         # 1. Create Department
