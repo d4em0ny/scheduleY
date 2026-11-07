@@ -91,3 +91,4 @@ async def add_instructor_availability(
     except Exception as e:
         await session.rollback()
         raise HTTPException(status_code=400, detail=f"Adding availability failed: {e}")
+

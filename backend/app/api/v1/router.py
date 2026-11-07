@@ -15,3 +15,4 @@ api_router.include_router(instructors.router)
 api_router.include_router(sections.router)
 api_router.include_router(coordination.router)
 api_router.include_router(allocations.router)
+

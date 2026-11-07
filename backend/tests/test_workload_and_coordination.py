@@ -267,3 +267,4 @@ async def test_offer_rejection_releases_hold(db_session: AsyncSession, sample_ac
     # Held hours must be back to 0
     _, held = await WorkloadService.calculate_workload_breakdown(db_session, prof.id)
     assert held == 0.0
+

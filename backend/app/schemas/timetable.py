@@ -61,3 +61,4 @@ class TimetableDiagnosticReport(BaseModel):
     hard_conflict_count: int
     soft_penalty_score: float
     conflicts: List[TimetableConflict] = Field(default_factory=list)
+

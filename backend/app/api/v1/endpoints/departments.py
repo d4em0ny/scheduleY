@@ -78,3 +78,4 @@ async def create_classroom(
     except Exception as e:
         await session.rollback()
         raise HTTPException(status_code=400, detail=f"Classroom creation failed: {e}")
+

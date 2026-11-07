@@ -171,3 +171,4 @@ async def test_internal_allocation_balancing_and_qualifications(db_session: Asyn
     committed, held = await WorkloadService.calculate_workload_breakdown(db_session, alice.id)
     assert committed == 3.0
     assert held == 0.0
+

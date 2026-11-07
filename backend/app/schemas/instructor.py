@@ -54,3 +54,4 @@ class InstructorWorkloadSummary(BaseModel):
     held_hours: float
     remaining_capacity: float
     is_overloaded: bool
+

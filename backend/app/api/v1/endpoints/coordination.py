@@ -92,3 +92,4 @@ async def reject_offer(
     except ValueError as e:
         await session.rollback()
         raise HTTPException(status_code=400, detail=str(e))
+

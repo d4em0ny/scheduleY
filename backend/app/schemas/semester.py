@@ -25,3 +25,4 @@ class SemesterRead(SemesterBase):
     id: uuid.UUID
 
     model_config = ConfigDict(from_attributes=True)
+

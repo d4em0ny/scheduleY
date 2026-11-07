@@ -162,3 +162,4 @@ class InternalAllocationService:
         session.add(allocation)
         await session.flush()
         return allocation
+

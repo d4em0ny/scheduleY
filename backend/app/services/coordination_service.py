@@ -232,3 +232,4 @@ class CoordinationService:
         if count > 0:
             await session.flush()
         return count
+

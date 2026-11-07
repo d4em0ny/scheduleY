@@ -1,0 +1,225 @@
+import type { Department, StudentSection, Instructor, ScheduledSession, InterdeptRequest, AllocationRecommendation } from '../types';
+
+export const DEPARTMENTS: Department[] = [
+  { id: 'dept-1', code: 'CS', name: 'Department of Computer Science' },
+  { id: 'dept-2', code: 'MATH', name: 'Department of Mathematics' },
+  { id: 'dept-3', code: 'ECE', name: 'Electrical & Computer Engineering' },
+];
+
+export const SECTIONS: StudentSection[] = [
+  {
+    id: 'sec-1',
+    departmentCode: 'CS',
+    programCode: 'BSCS',
+    batchYear: 2024,
+    sectionName: 'CS-Year 1 Sec A',
+    studentCount: 45,
+    assignedRoomNumber: 'Room 101',
+    assignedBuilding: 'ENG-1',
+  },
+  {
+    id: 'sec-2',
+    departmentCode: 'CS',
+    programCode: 'BSCS',
+    batchYear: 2023,
+    sectionName: 'CS-Year 2 Sec A',
+    studentCount: 42,
+    assignedRoomNumber: 'Room 102',
+    assignedBuilding: 'ENG-1',
+  },
+  {
+    id: 'sec-3',
+    departmentCode: 'ECE',
+    programCode: 'BSECE',
+    batchYear: 2024,
+    sectionName: 'ECE-Year 1 Sec A',
+    studentCount: 38,
+    assignedRoomNumber: 'Room 103',
+    assignedBuilding: 'ENG-1',
+  },
+];
+
+export const INITIAL_INSTRUCTORS: Instructor[] = [
+  {
+    id: 'inst-1',
+    departmentCode: 'CS',
+    employeeId: 'CS-001',
+    name: 'Dr. Alan Turing',
+    email: 'alan.turing@university.edu',
+    maxWeeklyWorkload: 12.0,
+    committedHours: 7.0,
+    heldHours: 0.0,
+    qualifications: ['ALGORITHMS', 'AI', 'THEORY'],
+  },
+  {
+    id: 'inst-2',
+    departmentCode: 'CS',
+    employeeId: 'CS-002',
+    name: 'Dr. Grace Hopper',
+    email: 'grace.hopper@university.edu',
+    maxWeeklyWorkload: 14.0,
+    committedHours: 8.0,
+    heldHours: 0.0,
+    qualifications: ['COMPILERS', 'SYSTEMS', 'PROGRAMMING'],
+  },
+  {
+    id: 'inst-3',
+    departmentCode: 'MATH',
+    employeeId: 'MATH-001',
+    name: 'Dr. Ada Lovelace',
+    email: 'ada.lovelace@university.edu',
+    maxWeeklyWorkload: 12.0,
+    committedHours: 6.0,
+    heldHours: 3.0,
+    qualifications: ['CALCULUS', 'DISCRETE_MATH', 'ALGEBRA'],
+  },
+  {
+    id: 'inst-4',
+    departmentCode: 'ECE',
+    employeeId: 'ECE-001',
+    name: 'Dr. Claude Shannon',
+    email: 'claude.shannon@university.edu',
+    maxWeeklyWorkload: 12.0,
+    committedHours: 5.0,
+    heldHours: 0.0,
+    qualifications: ['NETWORKS', 'INFORMATION_THEORY', 'SIGNALS'],
+  },
+];
+
+export const INITIAL_SESSIONS: ScheduledSession[] = [
+  {
+    id: 'sess-1',
+    courseCode: 'CS-101',
+    courseTitle: 'Intro to Programming',
+    componentType: 'REGULAR_CLASSROOM',
+    sectionName: 'CS-Year 1 Sec A',
+    instructorName: 'Dr. Grace Hopper',
+    instructorId: 'inst-2',
+    roomNumber: 'ENG-1 Room 101',
+    dayOfWeek: 1, // Mon
+    startSlot: 1, // 08:30
+    slotDuration: 1,
+  },
+  {
+    id: 'sess-2',
+    courseCode: 'CS-101',
+    courseTitle: 'Intro to Programming',
+    componentType: 'REGULAR_CLASSROOM',
+    sectionName: 'CS-Year 1 Sec A',
+    instructorName: 'Dr. Grace Hopper',
+    instructorId: 'inst-2',
+    roomNumber: 'ENG-1 Room 101',
+    dayOfWeek: 3, // Wed
+    startSlot: 1,
+    slotDuration: 1,
+  },
+  {
+    id: 'sess-3',
+    courseCode: 'CS-101-LAB',
+    courseTitle: 'Programming Laboratory',
+    componentType: 'COMPUTER_LAB',
+    sectionName: 'CS-Year 1 Sec A',
+    instructorName: 'Dr. Grace Hopper',
+    instructorId: 'inst-2',
+    roomNumber: 'ENG-1 Lab 201',
+    dayOfWeek: 4, // Thu
+    startSlot: 5,
+    slotDuration: 2,
+  },
+  {
+    id: 'sess-4',
+    courseCode: 'CS-201',
+    courseTitle: 'Data Structures & Algorithms',
+    componentType: 'REGULAR_CLASSROOM',
+    sectionName: 'CS-Year 2 Sec A',
+    instructorName: 'Dr. Alan Turing',
+    instructorId: 'inst-1',
+    roomNumber: 'ENG-1 Room 102',
+    dayOfWeek: 2, // Tue
+    startSlot: 2,
+    slotDuration: 2,
+  },
+  {
+    id: 'sess-5',
+    courseCode: 'MATH-201',
+    courseTitle: 'Discrete Mathematics',
+    componentType: 'REGULAR_CLASSROOM',
+    sectionName: 'CS-Year 2 Sec A',
+    instructorName: 'Dr. Ada Lovelace',
+    instructorId: 'inst-3',
+    roomNumber: 'ENG-1 Room 102',
+    dayOfWeek: 5, // Fri
+    startSlot: 3,
+    slotDuration: 2,
+  },
+];
+
+export const INITIAL_REQUESTS: InterdeptRequest[] = [
+  {
+    id: 'req-101',
+    requestNumber: 'REQ-CS-2026-001',
+    requestingDept: 'CS',
+    supplyingDept: 'MATH',
+    courseCode: 'MATH-201',
+    courseTitle: 'Discrete Mathematics',
+    componentType: 'REGULAR_CLASSROOM',
+    sectionName: 'CS-Year 2 Sec A',
+    requiredHours: 3.0,
+    requiredQualification: 'DISCRETE_MATH',
+    status: 'OFFERED',
+    remarks: 'Need experienced faculty for CS sophomores core discrete logic.',
+    createdAt: '2026-11-05 09:30',
+    currentOffer: {
+      id: 'off-1',
+      instructorId: 'inst-3',
+      instructorName: 'Dr. Ada Lovelace',
+      offeredHours: 3.0,
+      expiresAt: '2026-11-10 12:00',
+      isActiveHold: true,
+    },
+  },
+  {
+    id: 'req-102',
+    requestNumber: 'REQ-ECE-2026-004',
+    requestingDept: 'ECE',
+    supplyingDept: 'CS',
+    courseCode: 'CS-101',
+    courseTitle: 'Programming for Engineers',
+    componentType: 'COMPUTER_LAB',
+    sectionName: 'ECE-Year 1 Sec A',
+    requiredHours: 2.0,
+    requiredQualification: 'PROGRAMMING',
+    status: 'SUBMITTED',
+    remarks: 'Seeking CS lab instructor for Python embedded devices module.',
+    createdAt: '2026-11-06 14:15',
+  },
+];
+
+export const INITIAL_RECOMMENDATIONS: AllocationRecommendation[] = [
+  {
+    offeringId: 'off-rec-1',
+    courseCode: 'CS-301',
+    courseTitle: 'Operating Systems & Concurrency',
+    sectionName: 'CS-Year 2 Sec A',
+    componentType: 'REGULAR_CLASSROOM',
+    requiredHours: 3.0,
+    recommendedInstructorId: 'inst-2',
+    recommendedInstructorName: 'Dr. Grace Hopper',
+    qualificationMatch: true,
+    utilizationAfter: 0.78, // (8 + 3)/14
+    status: 'RECOMMENDED',
+  },
+  {
+    offeringId: 'off-rec-2',
+    courseCode: 'CS-305',
+    courseTitle: 'Artificial Intelligence & Machine Learning',
+    sectionName: 'CS-Year 2 Sec A',
+    componentType: 'REGULAR_CLASSROOM',
+    requiredHours: 3.0,
+    recommendedInstructorId: 'inst-1',
+    recommendedInstructorName: 'Dr. Alan Turing',
+    qualificationMatch: true,
+    utilizationAfter: 0.83, // (7 + 3)/12
+    status: 'RECOMMENDED',
+  },
+];

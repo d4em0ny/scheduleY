@@ -58,3 +58,4 @@ class Classroom(Base):
 
     building: Mapped["Building"] = relationship("Building", back_populates="classrooms")
     department: Mapped[Optional["Department"]] = relationship("Department", back_populates="classrooms")
+

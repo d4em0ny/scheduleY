@@ -56,3 +56,4 @@ class CourseOfferingRead(CourseOfferingBase):
     id: uuid.UUID
 
     model_config = ConfigDict(from_attributes=True)
+

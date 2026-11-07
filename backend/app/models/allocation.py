@@ -38,3 +38,4 @@ class InstructorAllocation(Base):
     offering: Mapped["CourseOffering"] = relationship("CourseOffering", back_populates="allocations")
     component: Mapped["CourseComponent"] = relationship("CourseComponent", back_populates="allocations")
     instructor: Mapped["Instructor"] = relationship("Instructor", back_populates="allocations")
+

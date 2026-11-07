@@ -133,3 +133,4 @@ class WorkloadService:
         projected_total = committed_hours + held_hours + additional_hours
 
         return projected_total <= (instructor.max_weekly_workload + 1e-6)
+

@@ -41,3 +41,4 @@ class StudentSection(Base):
     semester: Mapped["AcademicSemester"] = relationship("AcademicSemester", back_populates="student_sections")
     assigned_classroom: Mapped["Classroom"] = relationship("Classroom")
     course_offerings: Mapped[List["CourseOffering"]] = relationship("CourseOffering", back_populates="section")
+

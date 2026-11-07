@@ -37,3 +37,4 @@ async def list_semesters(session: AsyncSession = Depends(get_database_session)):
     stmt = select(AcademicSemester).order_by(AcademicSemester.start_date.desc())
     res = await session.execute(stmt)
     return res.scalars().all()
+

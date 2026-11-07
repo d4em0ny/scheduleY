@@ -26,3 +26,4 @@ class AcademicSemester(Base):
     student_sections: Mapped[List["StudentSection"]] = relationship("StudentSection", back_populates="semester")
     course_offerings: Mapped[List["CourseOffering"]] = relationship("CourseOffering", back_populates="semester")
     timetable_runs: Mapped[List["TimetableRun"]] = relationship("TimetableRun", back_populates="semester")
+

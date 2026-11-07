@@ -164,3 +164,4 @@ async def seed_university_data():
 
 if __name__ == "__main__":
     asyncio.run(seed_university_data())
+

@@ -50,3 +50,4 @@ class InterdeptRequestRead(InterdeptRequestBase):
     offers: List[OfferRead] = Field(default_factory=list)
 
     model_config = ConfigDict(from_attributes=True)
+

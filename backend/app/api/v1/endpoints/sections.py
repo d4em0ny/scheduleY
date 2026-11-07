@@ -39,3 +39,4 @@ async def list_sections(session: AsyncSession = Depends(get_database_session)):
     stmt = select(StudentSection).order_by(StudentSection.batch_year.desc(), StudentSection.section_name)
     res = await session.execute(stmt)
     return res.scalars().all()
+

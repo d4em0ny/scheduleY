@@ -69,3 +69,4 @@ class ScheduledSession(Base):
     component: Mapped["CourseComponent"] = relationship("CourseComponent")
     instructor: Mapped["Instructor"] = relationship("Instructor")
     classroom: Mapped["Classroom"] = relationship("Classroom")
+
