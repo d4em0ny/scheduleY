@@ -9,6 +9,8 @@ from backend.app.models.semester import AcademicSemester
 from backend.app.models.student_section import StudentSection
 from backend.app.models.instructor import Instructor, InstructorQualification, InstructorAvailability
 from backend.app.models.course import Course, CourseComponent, CourseOffering
+from backend.app.models.user import User, UserRole
+from backend.app.core.security import hash_password
 from backend.app.models.enums import RoomCategory
 
 
@@ -16,6 +18,7 @@ async def seed_university_data():
     print("🌱 Starting university seed data generation...")
 
     async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
         await conn.run_sync(Base.metadata.create_all)
 
     async with AsyncSessionLocal() as session:
@@ -158,8 +161,43 @@ async def seed_university_data():
         offering_math = CourseOffering(semester_id=fall_sem.id, course_id=math201.id, section_id=cs_sec_a.id)
         session.add_all([offering_cs, offering_math])
 
+        # 8. User Accounts with Role-Based Scopes
+        admin_user = User(
+            username="admin",
+            email="admin@university.edu",
+            full_name="University Registrar",
+            role=UserRole.UNIVERSITY_ADMIN,
+            department_id=None,
+            hashed_password=hash_password("admin123"),
+        )
+        cs_chair_user = User(
+            username="cs_chair",
+            email="alan.turing@university.edu",
+            full_name="Dr. Alan Turing",
+            role=UserRole.DEPARTMENT_CHAIR,
+            department_id=cs_dept.id,
+            hashed_password=hash_password("chair123"),
+        )
+        math_chair_user = User(
+            username="math_chair",
+            email="ada.lovelace@university.edu",
+            full_name="Dr. Ada Lovelace",
+            role=UserRole.DEPARTMENT_CHAIR,
+            department_id=math_dept.id,
+            hashed_password=hash_password("chair123"),
+        )
+        ece_chair_user = User(
+            username="ece_chair",
+            email="claude.shannon@university.edu",
+            full_name="Dr. Claude Shannon",
+            role=UserRole.DEPARTMENT_CHAIR,
+            department_id=ece_dept.id,
+            hashed_password=hash_password("chair123"),
+        )
+        session.add_all([admin_user, cs_chair_user, math_chair_user, ece_chair_user])
+
         await session.commit()
-        print("✅ University seed data successfully created!")
+        print("✅ University seed data and user accounts successfully created!")
 
 
 if __name__ == "__main__":

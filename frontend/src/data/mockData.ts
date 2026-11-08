@@ -1,4 +1,43 @@
-import type { Department, StudentSection, Instructor, ScheduledSession, InterdeptRequest, AllocationRecommendation } from '../types';
+import type { Department, StudentSection, Instructor, ScheduledSession, InterdeptRequest, AllocationRecommendation, User } from '../types';
+
+export const DEMO_USERS: User[] = [
+  {
+    id: 'user-cs',
+    username: 'cs_chair',
+    email: 'alan.turing@university.edu',
+    fullName: 'Dr. Alan Turing',
+    role: 'DEPARTMENT_CHAIR',
+    departmentCode: 'CS',
+    departmentName: 'Department of Computer Science',
+  },
+  {
+    id: 'user-math',
+    username: 'math_chair',
+    email: 'ada.lovelace@university.edu',
+    fullName: 'Dr. Ada Lovelace',
+    role: 'DEPARTMENT_CHAIR',
+    departmentCode: 'MATH',
+    departmentName: 'Department of Mathematics',
+  },
+  {
+    id: 'user-ece',
+    username: 'ece_chair',
+    email: 'claude.shannon@university.edu',
+    fullName: 'Dr. Claude Shannon',
+    role: 'DEPARTMENT_CHAIR',
+    departmentCode: 'ECE',
+    departmentName: 'Electrical & Computer Engineering',
+  },
+  {
+    id: 'user-admin',
+    username: 'admin',
+    email: 'admin@university.edu',
+    fullName: 'University Registrar',
+    role: 'UNIVERSITY_ADMIN',
+    departmentCode: null,
+    departmentName: null,
+  },
+];
 
 export const DEPARTMENTS: Department[] = [
   { id: 'dept-1', code: 'CS', name: 'Department of Computer Science' },

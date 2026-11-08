@@ -5,6 +5,18 @@ export type RoomCategory =
   | 'SCIENCE_LAB'
   | 'SEMINAR_ROOM';
 
+export type UserRole = 'UNIVERSITY_ADMIN' | 'DEPARTMENT_CHAIR' | 'INSTRUCTOR';
+
+export interface User {
+  id: string;
+  username: string;
+  email: string;
+  fullName: string;
+  role: UserRole;
+  departmentCode: string | null;
+  departmentName: string | null;
+}
+
 export type InterdeptStatus =
   | 'DRAFT'
   | 'SUBMITTED'
@@ -105,3 +117,4 @@ export interface AllocationRecommendation {
   utilizationAfter?: number;
   status: 'RECOMMENDED' | 'NO_QUALIFIED_INSTRUCTOR' | 'COMMITTED';
 }
+

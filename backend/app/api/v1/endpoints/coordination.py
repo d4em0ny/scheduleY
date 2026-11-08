@@ -1,7 +1,7 @@
 import uuid
-from typing import List
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy import select
+from typing import List, Optional
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy import select, or_
 from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -16,6 +16,29 @@ from backend.app.schemas.interdept import (
 from backend.app.services.coordination_service import CoordinationService
 
 router = APIRouter(prefix="/coordination", tags=["Interdepartmental Coordination"])
+
+
+@router.get("/requests", response_model=List[InterdeptRequestRead])
+async def list_requests(
+    dept_id: Optional[uuid.UUID] = Query(None, description="Department ID to scope requests"),
+    direction: Optional[str] = Query("all", description="Direction: incoming, outgoing, or all"),
+    session: AsyncSession = Depends(get_database_session),
+):
+    stmt = select(InterdepartmentalRequest).order_by(InterdepartmentalRequest.created_at.desc())
+    if dept_id:
+        if direction == "incoming":
+            stmt = stmt.where(InterdepartmentalRequest.supplying_dept_id == dept_id)
+        elif direction == "outgoing":
+            stmt = stmt.where(InterdepartmentalRequest.requesting_dept_id == dept_id)
+        else:
+            stmt = stmt.where(
+                or_(
+                    InterdepartmentalRequest.requesting_dept_id == dept_id,
+                    InterdepartmentalRequest.supplying_dept_id == dept_id,
+                )
+            )
+    result = await session.execute(stmt)
+    return result.scalars().all()
 
 
 @router.post("/requests", response_model=InterdeptRequestRead, status_code=status.HTTP_201_CREATED)

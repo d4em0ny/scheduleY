@@ -32,6 +32,10 @@ export const InternalAllocationPanel: React.FC<InternalAllocationPanelProps> = (
     );
   };
 
+  const filteredList = list.filter(
+    (item) => currentDept === 'ALL' || item.courseCode.startsWith(currentDept)
+  );
+
   return (
     <div className="space-y-6">
       {/* Banner / Optimizer trigger */}
@@ -64,14 +68,23 @@ export const InternalAllocationPanel: React.FC<InternalAllocationPanelProps> = (
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="font-bold text-sm text-slate-200">
-            Pending Recommendations for {currentDept === 'ALL' ? 'University' : currentDept} ({list.length})
+            Pending Recommendations for {currentDept === 'ALL' ? 'University-Wide' : currentDept} ({filteredList.length})
           </h3>
           <span className="text-xs text-slate-400">
             Chair review required before official commitment
           </span>
         </div>
 
-        {list.map((rec) => {
+        {filteredList.length === 0 ? (
+          <div className="bg-slate-900/60 border border-slate-800/80 rounded-xl p-10 text-center text-slate-400">
+            <CheckCircle2 className="w-10 h-10 mx-auto mb-2 text-emerald-400" />
+            <p className="font-semibold text-slate-200">No Pending Course Allocations</p>
+            <p className="text-xs text-slate-500 mt-1">
+              All internal offerings for {currentDept} currently have verified faculty assignments.
+            </p>
+          </div>
+        ) : (
+          filteredList.map((rec) => {
           const isCommitted = rec.status === 'COMMITTED';
 
           return (
@@ -137,7 +150,7 @@ export const InternalAllocationPanel: React.FC<InternalAllocationPanelProps> = (
               </div>
             </div>
           );
-        })}
+        }))}
       </div>
     </div>
   );

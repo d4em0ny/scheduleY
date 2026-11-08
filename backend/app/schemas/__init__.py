@@ -36,6 +36,7 @@ from backend.app.schemas.timetable import (
     TimetableConflict,
     TimetableDiagnosticReport,
 )
+from backend.app.schemas.user import UserLogin, UserRead, TokenResponse
 
 __all__ = [
     "DepartmentCreate",
@@ -68,5 +69,8 @@ __all__ = [
     "TimetableRunRead",
     "TimetableConflict",
     "TimetableDiagnosticReport",
+    "UserLogin",
+    "UserRead",
+    "TokenResponse",
 ]
 

@@ -4,6 +4,7 @@ import { TimetableGrid } from './components/TimetableGrid';
 import { CoordinationHub } from './components/CoordinationHub';
 import { WorkloadDashboard } from './components/WorkloadDashboard';
 import { InternalAllocationPanel } from './components/InternalAllocationPanel';
+import type { User, InterdeptRequest } from './types';
 import {
   DEPARTMENTS,
   SECTIONS,
@@ -11,16 +12,28 @@ import {
   INITIAL_SESSIONS,
   INITIAL_REQUESTS,
   INITIAL_RECOMMENDATIONS,
+  DEMO_USERS,
 } from './data/mockData';
 
 export function App() {
-  const [selectedDept, setSelectedDept] = useState<string>('CS');
+  const [currentUser, setCurrentUser] = useState<User>(DEMO_USERS[0]); // Default: Dr. Alan Turing (CS Chair)
+  const [selectedDept, setSelectedDept] = useState<string>(DEMO_USERS[0].departmentCode || 'ALL');
   const [activeTab, setActiveTab] = useState<'timetable' | 'coordination' | 'workload' | 'allocations'>('timetable');
 
   const [instructors, setInstructors] = useState(INITIAL_INSTRUCTORS);
   const [requests, setRequests] = useState(INITIAL_REQUESTS);
   const [sessions] = useState(INITIAL_SESSIONS);
   const [recommendations] = useState(INITIAL_RECOMMENDATIONS);
+
+  // Switch User Profile and adapt department scope
+  const handleSelectUser = (user: User) => {
+    setCurrentUser(user);
+    if (user.departmentCode) {
+      setSelectedDept(user.departmentCode);
+    } else {
+      setSelectedDept('ALL');
+    }
+  };
 
   // Handle Offer Acceptance
   const handleAcceptOffer = (requestId: string) => {
@@ -108,6 +121,11 @@ export function App() {
     );
   };
 
+  // Handle New Interdepartmental Request creation
+  const handleCreateRequest = (newReq: InterdeptRequest) => {
+    setRequests((prev) => [newReq, ...prev]);
+  };
+
   // Handle Internal Allocation Commit
   const handleCommitAllocation = (offeringId: string) => {
     const rec = recommendations.find((r) => r.offeringId === offeringId);
@@ -141,6 +159,9 @@ export function App() {
         activeTab={activeTab}
         onSelectTab={setActiveTab}
         pendingRequestsCount={pendingRequestsCount}
+        currentUser={currentUser}
+        onSelectUser={handleSelectUser}
+        allUsers={DEMO_USERS}
       />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -149,6 +170,7 @@ export function App() {
             sessions={sessions}
             sections={SECTIONS}
             instructors={instructors}
+            currentDept={selectedDept}
           />
         )}
 
@@ -157,9 +179,11 @@ export function App() {
             requests={requests}
             instructors={instructors}
             currentDept={selectedDept}
+            departments={DEPARTMENTS}
             onAcceptOffer={handleAcceptOffer}
             onRejectOffer={handleRejectOffer}
             onMakeOffer={handleMakeOffer}
+            onCreateRequest={handleCreateRequest}
           />
         )}
 

@@ -18,6 +18,7 @@ from backend.app.models.allocation import InstructorAllocation
 from backend.app.models.interdept import InterdepartmentalRequest, RequestOffer
 from backend.app.models.timetable import TimetableRun, ScheduledSession
 from backend.app.models.audit import AuditLog
+from backend.app.models.user import User, UserRole
 
 __all__ = [
     "RoomCategory",
@@ -42,5 +43,7 @@ __all__ = [
     "TimetableRun",
     "ScheduledSession",
     "AuditLog",
+    "User",
+    "UserRole",
 ]
 

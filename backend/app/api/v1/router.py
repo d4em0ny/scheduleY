@@ -6,9 +6,11 @@ from backend.app.api.v1.endpoints import (
     sections,
     coordination,
     allocations,
+    auth,
 )
 
 api_router = APIRouter()
+api_router.include_router(auth.router)
 api_router.include_router(departments.router)
 api_router.include_router(semesters.router)
 api_router.include_router(instructors.router)

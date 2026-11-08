@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { ScheduledSession, StudentSection, Instructor } from '../types';
 import { Clock, MapPin, User, BookOpen, Layers } from 'lucide-react';
 
@@ -6,6 +6,7 @@ interface TimetableGridProps {
   sessions: ScheduledSession[];
   sections: StudentSection[];
   instructors: Instructor[];
+  currentDept?: string;
 }
 
 const DAYS = [
@@ -31,10 +32,35 @@ export const TimetableGrid: React.FC<TimetableGridProps> = ({
   sessions,
   sections,
   instructors,
+  currentDept,
 }) => {
+  const scopedSections = sections.filter(
+    (s) => !currentDept || currentDept === 'ALL' || s.departmentCode === currentDept
+  );
+  const scopedInstructors = instructors.filter(
+    (i) => !currentDept || currentDept === 'ALL' || i.departmentCode === currentDept
+  );
+
   const [filterMode, setFilterMode] = useState<'section' | 'instructor'>('section');
-  const [selectedSection, setSelectedSection] = useState<string>(sections[0]?.sectionName || '');
-  const [selectedInstructorId, setSelectedInstructorId] = useState<string>(instructors[0]?.id || '');
+  const [selectedSection, setSelectedSection] = useState<string>(
+    scopedSections[0]?.sectionName || sections[0]?.sectionName || ''
+  );
+  const [selectedInstructorId, setSelectedInstructorId] = useState<string>(
+    scopedInstructors[0]?.id || instructors[0]?.id || ''
+  );
+
+  // Sync selection when department scope changes
+  useEffect(() => {
+    if (scopedSections.length > 0 && !scopedSections.some((s) => s.sectionName === selectedSection)) {
+      setSelectedSection(scopedSections[0].sectionName);
+    }
+  }, [currentDept, scopedSections, selectedSection]);
+
+  useEffect(() => {
+    if (scopedInstructors.length > 0 && !scopedInstructors.some((i) => i.id === selectedInstructorId)) {
+      setSelectedInstructorId(scopedInstructors[0].id);
+    }
+  }, [currentDept, scopedInstructors, selectedInstructorId]);
 
   // Filter sessions based on active selection
   const filteredSessions = sessions.filter((sess) => {
@@ -111,7 +137,7 @@ export const TimetableGrid: React.FC<TimetableGridProps> = ({
               onChange={(e) => setSelectedSection(e.target.value)}
               className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm font-semibold text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
             >
-              {sections.map((sec) => (
+              {scopedSections.map((sec) => (
                 <option key={sec.id} value={sec.sectionName}>
                   {sec.sectionName} ({sec.studentCount} students)
                 </option>
@@ -123,7 +149,7 @@ export const TimetableGrid: React.FC<TimetableGridProps> = ({
               onChange={(e) => setSelectedInstructorId(e.target.value)}
               className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm font-semibold text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
             >
-              {instructors.map((inst) => (
+              {scopedInstructors.map((inst) => (
                 <option key={inst.id} value={inst.id}>
                   {inst.name} ({inst.departmentCode} • {inst.maxWeeklyWorkload}h cap)
                 </option>
