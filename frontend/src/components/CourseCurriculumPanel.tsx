@@ -107,18 +107,18 @@ export const CourseCurriculumPanel: React.FC<CourseCurriculumPanelProps> = ({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Top Banner & Action */}
-      <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center space-x-2 text-indigo-400 text-xs font-bold uppercase tracking-wider mb-1">
+          <div className="flex items-center space-x-2 text-blue-600 text-xs font-bold uppercase tracking-wider mb-1">
             <BookOpen className="w-4 h-4" />
             <span>Academic Curriculum & Course Offerings</span>
           </div>
-          <h2 className="text-xl font-bold text-white">
+          <h2 className="text-xl font-extrabold text-slate-900">
             {currentDept === 'ALL' ? 'University Student Courses' : `${currentDept} Department Courses by Year`}
           </h2>
-          <p className="text-xs text-slate-400 mt-0.5">
+          <p className="text-xs text-slate-500 mt-0.5">
             Configure course components, weekly contact hours, and permanent lecture room allocations by student year.
           </p>
         </div>
@@ -128,7 +128,7 @@ export const CourseCurriculumPanel: React.FC<CourseCurriculumPanelProps> = ({
             setFormYear(selectedYear);
             setIsAddModalOpen(true);
           }}
-          className="flex items-center space-x-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-md shadow-indigo-600/30 transition-all cursor-pointer flex-shrink-0"
+          className="flex items-center space-x-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white shadow-xs shadow-blue-600/20 transition-all cursor-pointer flex-shrink-0"
         >
           <Plus className="w-4 h-4" />
           <span>Enter Course for {selectedYear}</span>
@@ -136,7 +136,7 @@ export const CourseCurriculumPanel: React.FC<CourseCurriculumPanelProps> = ({
       </div>
 
       {/* Year Tabs */}
-      <div className="flex flex-wrap items-center gap-2 p-1.5 bg-slate-900/90 border border-slate-800 rounded-xl">
+      <div className="flex flex-wrap items-center gap-2 p-1.5 bg-white border border-slate-200/90 rounded-2xl shadow-xs">
         {YEAR_TABS.map((yt) => {
           const isSelected = selectedYear === yt.label;
           const count = deptCourses.filter((c) => c.yearLabel === yt.label).length;
@@ -145,10 +145,10 @@ export const CourseCurriculumPanel: React.FC<CourseCurriculumPanelProps> = ({
             <button
               key={yt.label}
               onClick={() => setSelectedYear(yt.label)}
-              className={`flex-1 sm:flex-none flex items-center justify-between sm:justify-center space-x-2.5 px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
+              className={`flex-1 sm:flex-none flex items-center justify-between sm:justify-center space-x-2.5 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                 isSelected
-                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                  ? 'bg-blue-600 text-white shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-[#f5f5f7]'
               }`}
             >
               <div className="flex items-center space-x-2">
@@ -157,7 +157,7 @@ export const CourseCurriculumPanel: React.FC<CourseCurriculumPanelProps> = ({
               </div>
               <span
                 className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
-                  isSelected ? 'bg-indigo-800/80 text-white' : 'bg-slate-800 text-slate-400'
+                  isSelected ? 'bg-blue-800 text-white' : 'bg-slate-100 text-slate-500'
                 }`}
               >
                 {count}
@@ -168,21 +168,21 @@ export const CourseCurriculumPanel: React.FC<CourseCurriculumPanelProps> = ({
       </div>
 
       {/* Cohort Summary Bar */}
-      <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+      <div className="bg-white border border-slate-200/80 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs shadow-xs">
         <div className="flex items-center space-x-2">
-          <span className="text-slate-400">Target Student Cohort:</span>
-          <span className="font-bold text-slate-200">
+          <span className="text-slate-500">Target Student Cohort:</span>
+          <span className="font-bold text-slate-800">
             {YEAR_TABS.find((y) => y.label === selectedYear)?.desc}
           </span>
         </div>
 
-        <div className="flex items-center space-x-4 text-slate-400">
+        <div className="flex items-center space-x-4 text-slate-500">
           <div>
-            Total Offerings: <strong className="text-indigo-400">{yearCourses.length} courses</strong>
+            Total Offerings: <strong className="text-blue-700 font-bold">{yearCourses.length} courses</strong>
           </div>
           <div>
-            Total Weekly Contact:{' '}
-            <strong className="text-cyan-400">
+            Weekly Contact Load:{' '}
+            <strong className="text-cyan-700 font-bold">
               {yearCourses.reduce((acc, c) => acc + c.contactHours, 0).toFixed(1)} hrs
             </strong>
           </div>
@@ -192,10 +192,10 @@ export const CourseCurriculumPanel: React.FC<CourseCurriculumPanelProps> = ({
       {/* Courses List */}
       <div className="space-y-3">
         {yearCourses.length === 0 ? (
-          <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-12 text-center text-slate-400">
-            <BookOpen className="w-12 h-12 mx-auto mb-3 text-slate-600" />
-            <p className="font-semibold text-slate-300">No courses entered yet for {selectedYear}</p>
-            <p className="text-xs text-slate-500 mt-1">
+          <div className="bg-white border border-slate-200 rounded-2xl p-12 text-center text-slate-400">
+            <BookOpen className="w-12 h-12 mx-auto mb-3 text-slate-300" />
+            <p className="font-bold text-slate-700">No courses entered yet for {selectedYear}</p>
+            <p className="text-xs text-slate-400 mt-1">
               Click the "Enter Course for {selectedYear}" button above to add course offerings for this student cohort.
             </p>
           </div>
@@ -203,38 +203,38 @@ export const CourseCurriculumPanel: React.FC<CourseCurriculumPanelProps> = ({
           yearCourses.map((crs) => (
             <div
               key={crs.id}
-              className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm hover:border-slate-700 transition-all flex flex-col md:flex-row items-start md:items-center justify-between gap-4"
+              className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs hover:border-blue-400 hover:shadow-md transition-all flex flex-col md:flex-row items-start md:items-center justify-between gap-4"
             >
               {/* Left: Code, Title, Section */}
               <div className="space-y-1.5">
                 <div className="flex items-center space-x-2.5">
-                  <span className="font-mono text-sm font-bold text-white bg-slate-800 px-2 py-0.5 rounded border border-slate-700/60">
+                  <span className="font-mono text-sm font-bold text-blue-900 bg-blue-50 px-2 py-0.5 rounded-lg border border-blue-200">
                     {crs.courseCode}
                   </span>
-                  <span className="font-bold text-slate-100 text-sm">{crs.courseTitle}</span>
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-300 font-semibold border border-indigo-500/20">
+                  <span className="font-bold text-slate-900 text-sm">{crs.courseTitle}</span>
+                  <span className="text-xs px-2.5 py-0.5 rounded-full bg-[#f5f5f7] text-slate-700 font-semibold border border-slate-200">
                     {crs.sectionName}
                   </span>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-3 text-xs text-slate-400">
+                <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
                   <div className="flex items-center space-x-1">
-                    <MapPin className="w-3.5 h-3.5 text-cyan-400" />
-                    <span>{crs.assignedRoomNumber}</span>
+                    <MapPin className="w-3.5 h-3.5 text-blue-600" />
+                    <span className="font-medium text-slate-700">{crs.assignedRoomNumber}</span>
                   </div>
                   <span>•</span>
                   <div className="flex items-center space-x-1">
-                    <Clock className="w-3.5 h-3.5 text-indigo-400" />
+                    <Clock className="w-3.5 h-3.5 text-blue-600" />
                     <span>
                       {crs.contactHours} hrs/week ({crs.weeklySessions} session{crs.weeklySessions > 1 ? 's' : ''})
                     </span>
                   </div>
                   <span>•</span>
                   <span>
-                    Credit: <strong className="text-slate-300">{crs.creditHours} hrs</strong>
+                    Credit: <strong className="text-slate-800">{crs.creditHours} hrs</strong>
                   </span>
                   <span>•</span>
-                  <span className="capitalize text-slate-300">
+                  <span className="capitalize font-medium text-slate-700">
                     {crs.componentType === 'COMPUTER_LAB' ? 'Computer Lab' : 'Lecture'}
                   </span>
                 </div>
@@ -243,20 +243,20 @@ export const CourseCurriculumPanel: React.FC<CourseCurriculumPanelProps> = ({
               {/* Right: Faculty & Qualification */}
               <div className="flex flex-col sm:flex-row sm:items-center gap-3 text-xs">
                 <div>
-                  <span className="text-[10px] text-slate-500 block uppercase font-semibold">Faculty:</span>
+                  <span className="text-[10px] text-slate-400 block uppercase font-bold">Assigned Faculty:</span>
                   {crs.assignedInstructorName ? (
-                    <span className="font-semibold text-emerald-400 flex items-center space-x-1">
+                    <span className="font-semibold text-emerald-700 flex items-center space-x-1">
                       <UserCheck className="w-3.5 h-3.5" />
                       <span>{crs.assignedInstructorName}</span>
                     </span>
                   ) : (
-                    <span className="text-amber-400 italic font-medium">Pending Assignment</span>
+                    <span className="text-amber-700 italic font-semibold">Pending Assignment</span>
                   )}
                 </div>
 
-                <div className="sm:border-l sm:border-slate-800 sm:pl-3">
-                  <span className="text-[10px] text-slate-500 block uppercase font-semibold">Required Tag:</span>
-                  <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">
+                <div className="sm:border-l sm:border-slate-200 sm:pl-3">
+                  <span className="text-[10px] text-slate-400 block uppercase font-bold">Required Skill:</span>
+                  <span className="font-mono text-xs font-bold px-2 py-0.5 rounded-md bg-blue-50 text-blue-800 border border-blue-200">
                     {crs.requiredQualification}
                   </span>
                 </div>
@@ -268,25 +268,25 @@ export const CourseCurriculumPanel: React.FC<CourseCurriculumPanelProps> = ({
 
       {/* ENTER COURSE MODAL */}
       {isAddModalOpen && (
-        <div className="fixed inset-0 bg-black/75 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150">
-          <div className="bg-slate-900 border border-slate-800 rounded-xl max-w-lg w-full p-6 shadow-2xl">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150">
+          <div className="bg-white border border-slate-200 rounded-2xl max-w-lg w-full p-6 shadow-2xl">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div className="flex items-center space-x-2">
-                <div className="p-2 rounded-lg bg-indigo-500/10 text-indigo-400">
+                <div className="p-2 rounded-xl bg-blue-50 text-blue-600">
                   <Plus className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-base text-slate-100">
+                  <h3 className="font-bold text-base text-slate-900">
                     Enter Course Offering for {formYear}
                   </h3>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-slate-500">
                     Specify course details, contact hours, and target student cohort
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => setIsAddModalOpen(false)}
-                className="text-slate-400 hover:text-slate-200 text-lg leading-none"
+                className="text-slate-400 hover:text-slate-600 text-lg leading-none cursor-pointer"
               >
                 ✕
               </button>
@@ -295,11 +295,11 @@ export const CourseCurriculumPanel: React.FC<CourseCurriculumPanelProps> = ({
             <form onSubmit={handleSubmitNewCourse} className="mt-4 space-y-4 text-xs">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-400 font-medium mb-1">Student Year / Cohort:</label>
+                  <label className="block text-slate-700 font-semibold mb-1">Student Year / Cohort:</label>
                   <select
                     value={formYear}
                     onChange={(e) => setFormYear(e.target.value as YearTab)}
-                    className="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                    className="w-full bg-[#f8f9fa] border border-slate-200 rounded-xl p-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/40"
                   >
                     {YEAR_TABS.map((yt) => (
                       <option key={yt.label} value={yt.label}>
@@ -310,11 +310,11 @@ export const CourseCurriculumPanel: React.FC<CourseCurriculumPanelProps> = ({
                 </div>
 
                 <div>
-                  <label className="block text-slate-400 font-medium mb-1">Room Category:</label>
+                  <label className="block text-slate-700 font-semibold mb-1">Room Category:</label>
                   <select
                     value={formComponentType}
                     onChange={(e) => setFormComponentType(e.target.value as RoomCategory)}
-                    className="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                    className="w-full bg-[#f8f9fa] border border-slate-200 rounded-xl p-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/40"
                   >
                     <option value="REGULAR_CLASSROOM">Lecture (Assigned Section Room)</option>
                     <option value="COMPUTER_LAB">Computer Lab (Lab 201)</option>
@@ -325,11 +325,11 @@ export const CourseCurriculumPanel: React.FC<CourseCurriculumPanelProps> = ({
               </div>
 
               <div>
-                <label className="block text-slate-400 font-medium mb-1">Target Student Section:</label>
+                <label className="block text-slate-700 font-semibold mb-1">Target Student Section:</label>
                 <select
                   value={formSectionName}
                   onChange={(e) => setFormSectionName(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                  className="w-full bg-[#f8f9fa] border border-slate-200 rounded-xl p-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/40"
                 >
                   <option value="">Auto-Assign to First Section</option>
                   {yearSections.map((s) => (
@@ -342,32 +342,32 @@ export const CourseCurriculumPanel: React.FC<CourseCurriculumPanelProps> = ({
 
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-slate-400 font-medium mb-1">Course Code:</label>
+                  <label className="block text-slate-700 font-semibold mb-1">Course Code:</label>
                   <input
                     type="text"
                     required
                     placeholder="e.g. CS-205"
                     value={formCode}
                     onChange={(e) => setFormCode(e.target.value)}
-                    className="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 font-mono font-bold"
+                    className="w-full bg-[#f8f9fa] border border-slate-200 rounded-xl p-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/40 font-mono font-bold"
                   />
                 </div>
                 <div className="col-span-2">
-                  <label className="block text-slate-400 font-medium mb-1">Course Title:</label>
+                  <label className="block text-slate-700 font-semibold mb-1">Course Title:</label>
                   <input
                     type="text"
                     required
                     placeholder="e.g. Computer Architecture & Design"
                     value={formTitle}
                     onChange={(e) => setFormTitle(e.target.value)}
-                    className="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                    className="w-full bg-[#f8f9fa] border border-slate-200 rounded-xl p-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/40"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-slate-400 font-medium mb-1">Credit Hours:</label>
+                  <label className="block text-slate-700 font-semibold mb-1">Credit Hours:</label>
                   <input
                     type="number"
                     min="1"
@@ -376,12 +376,12 @@ export const CourseCurriculumPanel: React.FC<CourseCurriculumPanelProps> = ({
                     required
                     value={formCreditHours}
                     onChange={(e) => setFormCreditHours(parseFloat(e.target.value) || 3)}
-                    className="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 font-bold"
+                    className="w-full bg-[#f8f9fa] border border-slate-200 rounded-xl p-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/40 font-bold"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-slate-400 font-medium mb-1">Weekly Contact Hrs:</label>
+                  <label className="block text-slate-700 font-semibold mb-1">Weekly Contact Hrs:</label>
                   <input
                     type="number"
                     min="1"
@@ -390,12 +390,12 @@ export const CourseCurriculumPanel: React.FC<CourseCurriculumPanelProps> = ({
                     required
                     value={formContactHours}
                     onChange={(e) => setFormContactHours(parseFloat(e.target.value) || 3)}
-                    className="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 font-bold text-indigo-300"
+                    className="w-full bg-[#f8f9fa] border border-slate-200 rounded-xl p-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/40 font-bold text-blue-700"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-slate-400 font-medium mb-1">Sessions / Week:</label>
+                  <label className="block text-slate-700 font-semibold mb-1">Sessions / Week:</label>
                   <input
                     type="number"
                     min="1"
@@ -403,13 +403,13 @@ export const CourseCurriculumPanel: React.FC<CourseCurriculumPanelProps> = ({
                     required
                     value={formSessions}
                     onChange={(e) => setFormSessions(parseInt(e.target.value) || 2)}
-                    className="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                    className="w-full bg-[#f8f9fa] border border-slate-200 rounded-xl p-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/40 font-bold"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-slate-400 font-medium mb-1">
+                <label className="block text-slate-700 font-semibold mb-1">
                   Required Instructor Specialization Tag:
                 </label>
                 <input
@@ -418,21 +418,21 @@ export const CourseCurriculumPanel: React.FC<CourseCurriculumPanelProps> = ({
                   placeholder="e.g. SYSTEMS, ARCHITECTURE, ALGORITHMS"
                   value={formQual}
                   onChange={(e) => setFormQual(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 font-mono"
+                  className="w-full bg-[#f8f9fa] border border-slate-200 rounded-xl p-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/40 font-mono"
                 />
               </div>
 
-              <div className="pt-4 border-t border-slate-800 flex items-center justify-end space-x-3">
+              <div className="pt-4 border-t border-slate-100 flex items-center justify-end space-x-3">
                 <button
                   type="button"
                   onClick={() => setIsAddModalOpen(false)}
-                  className="px-4 py-2 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 transition-all"
+                  className="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-all cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-lg text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-md shadow-indigo-600/30 transition-all"
+                  className="px-4 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white shadow-xs transition-all cursor-pointer"
                 >
                   Save Course Offering
                 </button>

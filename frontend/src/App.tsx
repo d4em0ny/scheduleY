@@ -302,7 +302,7 @@ export function App() {
   ).length;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans antialiased selection:bg-indigo-500 selection:text-white">
+    <div className="min-h-screen bg-[#f5f5f7] text-slate-900 flex flex-col font-sans antialiased selection:bg-blue-600 selection:text-white">
       <Header
         departments={DEPARTMENTS}
         selectedDept={selectedDept}
@@ -375,7 +375,7 @@ export function App() {
         )}
       </main>
 
-      <footer className="bg-slate-900/60 border-t border-slate-800 text-xs text-slate-500 py-4 text-center">
+      <footer className="bg-white border-t border-slate-200 text-xs text-slate-500 py-4 text-center">
         <p>
           scheduleY • University Intelligent Scheduling & Resource Allocation System • Department Architecture & Timetabling Core
         </p>

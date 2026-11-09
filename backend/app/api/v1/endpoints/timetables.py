@@ -155,3 +155,4 @@ async def get_latest_timetable(
         created_at=run.created_at,
         sessions=session_reads,
     )
+

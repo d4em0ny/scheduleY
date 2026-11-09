@@ -116,3 +116,4 @@ async def create_offering(
     except Exception as e:
         await session.rollback()
         raise HTTPException(status_code=400, detail=f"Offering creation failed: {e}")
+
