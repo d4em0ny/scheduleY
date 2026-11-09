@@ -39,10 +39,10 @@ export const InternalAllocationPanel: React.FC<InternalAllocationPanelProps> = (
   return (
     <div className="space-y-6">
       {/* Banner / Optimizer trigger */}
-      <div className="bg-gradient-to-r from-blue-50/80 via-white to-blue-50/40 border border-blue-200/80 rounded-2xl p-6 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div className="card-edge-gradient bg-gradient-to-r from-white via-[#f8f9fb] to-[#f5f5f7] border border-slate-200/90 rounded-2xl p-6 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center space-x-2 text-blue-600 text-xs font-bold uppercase tracking-wider mb-1">
-            <Sparkles className="w-4 h-4 text-blue-600" />
+          <div className="flex items-center space-x-2 text-[#0e0447] text-xs font-bold uppercase tracking-wider mb-1">
+            <Sparkles className="w-4 h-4 text-[#0e0447]" />
             <span>Automated Internal Matching</span>
           </div>
           <h2 className="text-xl font-bold text-slate-900">
@@ -57,7 +57,7 @@ export const InternalAllocationPanel: React.FC<InternalAllocationPanelProps> = (
         <button
           onClick={handleRunOptimizer}
           disabled={isRunning}
-          className="flex items-center space-x-2 px-5 py-2.5 rounded-xl font-semibold text-xs bg-blue-600 hover:bg-blue-500 text-white shadow-xs shadow-blue-600/30 transition-all disabled:opacity-50 cursor-pointer flex-shrink-0"
+          className="btn-navy-gradient flex items-center space-x-2 px-5 py-2.5 rounded-xl font-semibold text-xs shadow-xs transition-all disabled:opacity-50 cursor-pointer flex-shrink-0"
         >
           <Zap className={`w-4 h-4 ${isRunning ? 'animate-spin' : ''}`} />
           <span>{isRunning ? 'Solving Optimal Match...' : 'Run Allocation Engine'}</span>
@@ -76,7 +76,7 @@ export const InternalAllocationPanel: React.FC<InternalAllocationPanelProps> = (
         </div>
 
         {filteredList.length === 0 ? (
-          <div className="bg-white border border-slate-200 rounded-2xl p-12 text-center text-slate-500 shadow-xs">
+          <div className="card-edge-gradient bg-white border border-slate-200 rounded-2xl p-12 text-center text-slate-500 shadow-xs">
             <CheckCircle2 className="w-10 h-10 mx-auto mb-2 text-emerald-500" />
             <p className="font-semibold text-slate-900">No Pending Course Allocations</p>
             <p className="text-xs text-slate-500 mt-1">
@@ -90,8 +90,8 @@ export const InternalAllocationPanel: React.FC<InternalAllocationPanelProps> = (
             return (
               <div
                 key={rec.offeringId}
-                className={`bg-white border rounded-2xl p-5 shadow-xs transition-all ${
-                  isCommitted ? 'border-emerald-300 bg-emerald-50/20' : 'border-slate-200/90 hover:border-blue-300'
+                className={`card-edge-gradient bg-white border rounded-2xl p-5 shadow-xs transition-all ${
+                  isCommitted ? 'border-emerald-300 bg-emerald-50/20' : 'border-slate-200/90 hover:border-[#0e0447]/40'
                 }`}
               >
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -109,20 +109,20 @@ export const InternalAllocationPanel: React.FC<InternalAllocationPanelProps> = (
                     <div className="flex items-center space-x-3 text-xs text-slate-500">
                       <span>Type: <strong className="text-slate-700">{rec.componentType}</strong></span>
                       <span>•</span>
-                      <span>Weekly Teaching Load: <strong className="text-blue-600">{rec.requiredHours} hrs</strong></span>
+                      <span>Weekly Teaching Load: <strong className="text-[#0e0447]">{rec.requiredHours} hrs</strong></span>
                     </div>
                   </div>
 
                   {/* Match result & action */}
                   <div className="flex items-center space-x-4">
                     {rec.recommendedInstructorName ? (
-                      <div className="flex items-center space-x-3 bg-[#f8f9fa] p-3 rounded-xl border border-slate-200">
+                      <div className="card-edge-subtle flex items-center space-x-3 bg-[#f8f9fa] p-3 rounded-xl border border-slate-200">
                         <UserCheck className="w-5 h-5 text-emerald-600" />
                         <div className="text-xs">
                           <span className="text-slate-500 block text-[10px]">Algorithm Selection:</span>
                           <span className="font-bold text-slate-900">{rec.recommendedInstructorName}</span>
                           {rec.utilizationAfter && (
-                            <span className="text-[10px] text-blue-600 block font-medium">
+                            <span className="text-[10px] text-[#0e0447] block font-medium">
                               Projected Load: {(rec.utilizationAfter * 100).toFixed(0)}%
                             </span>
                           )}

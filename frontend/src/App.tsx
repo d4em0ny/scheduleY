@@ -302,7 +302,7 @@ export function App() {
   ).length;
 
   return (
-    <div className="min-h-screen bg-[#f5f5f7] text-slate-900 flex flex-col font-sans antialiased selection:bg-blue-600 selection:text-white">
+    <div className="min-h-screen bg-[#f5f5f7] text-slate-900 flex flex-col font-sans antialiased selection:bg-[#0e0447] selection:text-white">
       <Header
         departments={DEPARTMENTS}
         selectedDept={selectedDept}

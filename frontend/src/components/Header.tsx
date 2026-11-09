@@ -60,7 +60,7 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex items-center justify-between h-16">
           {/* Logo & Identity */}
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center font-black text-xl text-white shadow-sm shadow-blue-500/20">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#0e0447] via-[#1a1154] to-[#281b69] flex items-center justify-center font-black text-xl text-white shadow-xs border border-[#0e0447]/40">
               Y
             </div>
             <div>
@@ -68,7 +68,7 @@ export const Header: React.FC<HeaderProps> = ({
                 <span className="font-extrabold text-lg tracking-tight text-slate-900">
                   scheduleY
                 </span>
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 font-bold border border-blue-200">
+                <span className="text-[10px] px-2 py-0.5 rounded-full badge-navy-gradient font-bold">
                   Academic Platform
                 </span>
               </div>
@@ -83,19 +83,19 @@ export const Header: React.FC<HeaderProps> = ({
             {/* Department Context */}
             {isChair ? (
               <div
-                className="flex items-center space-x-2 bg-blue-50/80 px-3 py-1.5 rounded-xl border border-blue-200 text-xs text-blue-900 shadow-2xs"
+                className="flex items-center space-x-2 badge-navy-gradient px-3 py-1.5 rounded-xl text-xs font-semibold shadow-2xs"
                 title={`Security scope restricted to ${currentUser.departmentCode} department`}
               >
-                <Lock className="w-3.5 h-3.5 text-blue-600" />
+                <Lock className="w-3.5 h-3.5 text-[#0e0447]" />
                 <span className="text-slate-500 hidden md:inline">Scope:</span>
-                <span className="font-bold text-blue-900">{currentUser.departmentCode}</span>
-                <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-blue-200/70 text-blue-800 font-bold">
+                <span className="font-bold text-[#0e0447]">{currentUser.departmentCode}</span>
+                <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-[#0e0447]/15 text-[#0e0447] font-bold">
                   Locked
                 </span>
               </div>
             ) : (
               <div className="flex items-center space-x-2 bg-[#f8f9fa] px-3 py-1.5 rounded-xl border border-slate-200 text-xs">
-                <Building2 className="w-4 h-4 text-blue-600" />
+                <Building2 className="w-4 h-4 text-[#0e0447]" />
                 <span className="text-slate-500 hidden sm:inline">Department:</span>
                 <select
                   value={selectedDept}
@@ -122,9 +122,9 @@ export const Header: React.FC<HeaderProps> = ({
             <div className="relative" ref={menuRef}>
               <button
                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                className="flex items-center space-x-2 bg-[#f8f9fa] hover:bg-slate-100 border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs font-medium text-slate-800 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/30 cursor-pointer"
+                className="flex items-center space-x-2 bg-[#f8f9fa] hover:bg-slate-100 border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs font-medium text-slate-800 transition-all focus:outline-none focus:ring-2 focus:ring-[#0e0447]/30 cursor-pointer"
               >
-                <div className="w-6 h-6 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-[11px] shadow-xs">
+                <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-[#0e0447] to-[#251b68] flex items-center justify-center text-white font-bold text-[11px] shadow-xs">
                   {currentUser.fullName
                     .split(' ')
                     .map((n) => n[0])
@@ -146,7 +146,7 @@ export const Header: React.FC<HeaderProps> = ({
 
               {/* Dropdown Menu */}
               {isUserMenuOpen && (
-                <div className="absolute right-0 mt-2 w-72 bg-white border border-slate-200 rounded-2xl shadow-xl py-2 z-50 animate-in fade-in slide-in-from-top-1 duration-150">
+                <div className="absolute right-0 mt-2 w-72 bg-white border border-slate-200 rounded-2xl shadow-xl py-2 z-50 card-edge-gradient animate-in fade-in slide-in-from-top-1 duration-150">
                   <div className="px-3.5 py-2 border-b border-slate-100 text-xs text-slate-500">
                     <p className="font-bold text-slate-800">Switch System Account</p>
                     <p className="text-[11px] text-slate-400">
@@ -166,7 +166,7 @@ export const Header: React.FC<HeaderProps> = ({
                           }}
                           className={`w-full text-left px-3.5 py-2.5 text-xs flex items-center justify-between transition-colors cursor-pointer ${
                             isSelected
-                              ? 'bg-blue-50 text-blue-900 font-bold border-l-3 border-blue-600'
+                              ? 'bg-gradient-to-r from-[#0e0447]/10 to-[#f5f5f7] text-[#0e0447] font-bold border-l-3 border-[#0e0447]'
                               : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'
                           }`}
                         >
@@ -187,14 +187,14 @@ export const Header: React.FC<HeaderProps> = ({
                               </div>
                             </div>
                           </div>
-                          {isSelected && <Check className="w-4 h-4 text-blue-600" />}
+                          {isSelected && <Check className="w-4 h-4 text-[#0e0447]" />}
                         </button>
                       );
                     })}
                   </div>
 
                   <div className="px-3.5 py-2 mt-1 border-t border-slate-100 bg-[#f8f9fa] text-[11px] text-slate-500 flex items-center space-x-1.5 rounded-b-2xl">
-                    <UserCheck className="w-3.5 h-3.5 text-blue-600" />
+                    <UserCheck className="w-3.5 h-3.5 text-[#0e0447]" />
                     <span>
                       Active: {currentUser.fullName} (
                       {currentUser.role === 'UNIVERSITY_ADMIN'
@@ -215,8 +215,8 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={() => onSelectTab('timetable')}
             className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer flex-shrink-0 ${
               activeTab === 'timetable'
-                ? 'bg-blue-600 text-white shadow-xs'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                ? 'tab-navy-active'
+                : 'text-slate-600 hover:text-[#0e0447] hover:bg-[#f5f5f7]'
             }`}
           >
             <Calendar className="w-4 h-4" />
@@ -227,8 +227,8 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={() => onSelectTab('courses')}
             className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer flex-shrink-0 ${
               activeTab === 'courses'
-                ? 'bg-blue-600 text-white shadow-xs'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                ? 'tab-navy-active'
+                : 'text-slate-600 hover:text-[#0e0447] hover:bg-[#f5f5f7]'
             }`}
           >
             <BookOpen className="w-4 h-4" />
@@ -239,8 +239,8 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={() => onSelectTab('faculty')}
             className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer flex-shrink-0 ${
               activeTab === 'faculty'
-                ? 'bg-blue-600 text-white shadow-xs'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                ? 'tab-navy-active'
+                : 'text-slate-600 hover:text-[#0e0447] hover:bg-[#f5f5f7]'
             }`}
           >
             <Users className="w-4 h-4" />
@@ -251,8 +251,8 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={() => onSelectTab('coordination')}
             className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer flex-shrink-0 relative ${
               activeTab === 'coordination'
-                ? 'bg-blue-600 text-white shadow-xs'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                ? 'tab-navy-active'
+                : 'text-slate-600 hover:text-[#0e0447] hover:bg-[#f5f5f7]'
             }`}
           >
             <GitPullRequest className="w-4 h-4" />
@@ -268,8 +268,8 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={() => onSelectTab('workload')}
             className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer flex-shrink-0 ${
               activeTab === 'workload'
-                ? 'bg-blue-600 text-white shadow-xs'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                ? 'tab-navy-active'
+                : 'text-slate-600 hover:text-[#0e0447] hover:bg-[#f5f5f7]'
             }`}
           >
             <Gauge className="w-4 h-4" />
@@ -280,8 +280,8 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={() => onSelectTab('allocations')}
             className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer flex-shrink-0 ${
               activeTab === 'allocations'
-                ? 'bg-blue-600 text-white shadow-xs'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                ? 'tab-navy-active'
+                : 'text-slate-600 hover:text-[#0e0447] hover:bg-[#f5f5f7]'
             }`}
           >
             <Sparkles className="w-4 h-4" />
@@ -289,6 +289,7 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
         </div>
       </div>
+      <div className="h-[2px] w-full bg-gradient-to-r from-[#0e0447] via-[#0e0447]/30 to-[#f5f5f7]" />
     </header>
   );
 };

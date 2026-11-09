@@ -59,14 +59,14 @@ export const FacultyList: React.FC<FacultyListProps> = ({
     const tags = qualificationTags
       .split(',')
       .map((t) => t.trim().toUpperCase())
-      .filter(Boolean);
+      .filter((t) => t.length > 0);
 
     const newInst: Instructor = {
-      id: `inst-${Date.now()}`,
-      departmentCode: currentDept !== 'ALL' ? currentDept : deptCode,
+      id: `inst-custom-${Date.now()}`,
       employeeId: employeeId.trim().toUpperCase(),
       name: `Dr. ${firstName.trim()} ${lastName.trim()}`,
-      email: email.trim().toLowerCase() || `${firstName.toLowerCase()}.${lastName.toLowerCase()}@university.edu`,
+      email: email.trim() || `${firstName.toLowerCase()}.${lastName.toLowerCase()}@university.edu`,
+      departmentCode: deptCode,
       maxWeeklyWorkload: maxWorkload,
       committedHours: 0,
       heldHours: 0,
@@ -75,20 +75,23 @@ export const FacultyList: React.FC<FacultyListProps> = ({
 
     onAddInstructor(newInst);
     setIsAddModalOpen(false);
+
     // Reset form
     setFirstName('');
     setLastName('');
     setEmployeeId('');
     setEmail('');
+    setMaxWorkload(12.0);
+    setQualificationTags('ALGORITHMS, AI');
   };
 
   return (
-    <div className="space-y-5">
-      {/* Control / Header Bar */}
-      <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+    <div className="space-y-6">
+      {/* Header Row */}
+      <div className="card-edge-gradient flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white border border-slate-200/90 p-5 rounded-2xl shadow-xs">
         <div>
-          <div className="flex items-center space-x-2 text-blue-600 text-xs font-bold uppercase tracking-wider mb-1">
-            <Users className="w-4 h-4" />
+          <div className="flex items-center space-x-2 text-[#0e0447] text-xs font-bold uppercase tracking-wider mb-1">
+            <Users className="w-4 h-4 text-[#0e0447]" />
             <span>Academic Faculty Registry</span>
           </div>
           <h2 className="text-xl font-extrabold text-slate-900">
@@ -104,7 +107,7 @@ export const FacultyList: React.FC<FacultyListProps> = ({
             if (currentDept !== 'ALL') setDeptCode(currentDept);
             setIsAddModalOpen(true);
           }}
-          className="flex items-center space-x-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white shadow-xs shadow-blue-600/20 transition-all cursor-pointer flex-shrink-0"
+          className="btn-navy-gradient flex items-center space-x-1.5 px-4 py-2 rounded-xl text-xs font-bold shadow-xs cursor-pointer flex-shrink-0"
         >
           <Plus className="w-4 h-4" />
           <span>Add Faculty Member</span>
@@ -112,7 +115,7 @@ export const FacultyList: React.FC<FacultyListProps> = ({
       </div>
 
       {/* Search and Filter Row */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white border border-slate-200/90 p-3 rounded-2xl shadow-xs">
+      <div className="card-edge-subtle flex flex-col sm:flex-row items-center justify-between gap-3 bg-white border border-slate-200/90 p-3 rounded-2xl shadow-xs">
         <div className="relative w-full sm:w-72">
           <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
           <input
@@ -120,7 +123,7 @@ export const FacultyList: React.FC<FacultyListProps> = ({
             placeholder="Search by faculty name or ID..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-3 py-1.5 bg-[#f8f9fa] border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/40"
+            className="w-full pl-9 pr-3 py-1.5 bg-[#f8f9fa] border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0e0447]/30"
           />
         </div>
 
@@ -131,8 +134,8 @@ export const FacultyList: React.FC<FacultyListProps> = ({
             onClick={() => setSelectedTag('ALL')}
             className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
               selectedTag === 'ALL'
-                ? 'bg-blue-600 text-white shadow-xs'
-                : 'text-slate-600 hover:text-slate-900 bg-[#f5f5f7]'
+                ? 'tab-navy-active'
+                : 'text-slate-600 hover:text-[#0e0447] bg-[#f5f5f7]'
             }`}
           >
             All ({deptFiltered.length})
@@ -143,8 +146,8 @@ export const FacultyList: React.FC<FacultyListProps> = ({
               onClick={() => setSelectedTag(tag)}
               className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                 selectedTag === tag
-                  ? 'bg-blue-600 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900 bg-[#f5f5f7]'
+                  ? 'tab-navy-active'
+                  : 'text-slate-600 hover:text-[#0e0447] bg-[#f5f5f7]'
               }`}
             >
               {tag}
@@ -156,7 +159,7 @@ export const FacultyList: React.FC<FacultyListProps> = ({
       {/* Instructors Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredInstructors.length === 0 ? (
-          <div className="col-span-full bg-white border border-slate-200 rounded-2xl p-12 text-center text-slate-500">
+          <div className="card-edge-gradient col-span-full bg-white border border-slate-200 rounded-2xl p-12 text-center text-slate-500">
             <Users className="w-12 h-12 mx-auto mb-3 text-slate-300" />
             <p className="font-bold text-slate-700">No instructors found matching criteria</p>
             <p className="text-xs text-slate-400 mt-1">
@@ -175,13 +178,13 @@ export const FacultyList: React.FC<FacultyListProps> = ({
             return (
               <div
                 key={inst.id}
-                className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs hover:border-blue-300 hover:shadow-md transition-all flex flex-col justify-between"
+                className="card-edge-gradient bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs hover:border-[#0e0447]/40 transition-all flex flex-col justify-between"
               >
                 <div>
                   {/* Top info & avatar */}
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center space-x-3">
-                      <div className="w-11 h-11 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center font-bold text-white text-sm shadow-xs">
+                      <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#0e0447] to-[#251b68] flex items-center justify-center font-bold text-white text-sm shadow-xs border border-[#0e0447]/30">
                         {inst.name
                           .replace('Dr. ', '')
                           .split(' ')
@@ -190,13 +193,13 @@ export const FacultyList: React.FC<FacultyListProps> = ({
                           .join('')}
                       </div>
                       <div>
-                        <h3 className="font-bold text-sm text-slate-900">{inst.name}</h3>
-                        <div className="flex items-center space-x-1.5 text-xs text-slate-500 mt-0.5">
-                          <span className="font-mono text-[11px] text-blue-900 font-bold px-1.5 py-0.2 rounded bg-blue-50 border border-blue-200">
-                            {inst.employeeId}
+                        <h3 className="font-bold text-sm text-slate-900 leading-tight">{inst.name}</h3>
+                        <div className="flex items-center space-x-1.5 mt-0.5">
+                          <span className="badge-navy-gradient text-[11px] font-bold px-2 py-0.5 rounded-md">
+                            {inst.departmentCode}
                           </span>
-                          <span>•</span>
-                          <span className="text-blue-700 font-bold">{inst.departmentCode}</span>
+                          <span className="text-slate-400 text-xs">•</span>
+                          <span className="font-mono text-xs text-slate-500">{inst.employeeId}</span>
                         </div>
                       </div>
                     </div>
@@ -232,7 +235,7 @@ export const FacultyList: React.FC<FacultyListProps> = ({
                       {inst.qualifications.map((q) => (
                         <span
                           key={q}
-                          className="px-2 py-0.5 rounded-md bg-blue-50 text-blue-800 border border-blue-200/80 font-mono text-[10px] font-bold"
+                          className="badge-navy-gradient font-mono text-[10px] font-bold px-2 py-0.5 rounded-md"
                         >
                           {q}
                         </span>
@@ -253,7 +256,7 @@ export const FacultyList: React.FC<FacultyListProps> = ({
                   {/* Progress bar */}
                   <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden flex">
                     <div
-                      className="bg-blue-600 h-full transition-all"
+                      className="bg-gradient-to-r from-[#0e0447] to-[#251b68] h-full transition-all"
                       style={{ width: `${(inst.committedHours / inst.maxWeeklyWorkload) * 100}%` }}
                       title={`Committed: ${inst.committedHours}h`}
                     />
@@ -268,7 +271,7 @@ export const FacultyList: React.FC<FacultyListProps> = ({
                   <div className="flex justify-between items-center text-[11px] text-slate-500 mt-2">
                     <span>
                       Available Headroom:{' '}
-                      <strong className={remaining > 0 ? 'text-blue-700 font-bold' : 'text-rose-600 font-bold'}>
+                      <strong className={remaining > 0 ? 'text-[#0e0447] font-bold' : 'text-rose-600 font-bold'}>
                         {remaining.toFixed(1)} hrs
                       </strong>
                     </span>
@@ -289,26 +292,20 @@ export const FacultyList: React.FC<FacultyListProps> = ({
       {/* ADD FACULTY MODAL */}
       {isAddModalOpen && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150">
-          <div className="bg-white border border-slate-200 rounded-2xl max-w-lg w-full p-6 shadow-2xl">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <div className="flex items-center space-x-2">
-                <div className="p-2 rounded-xl bg-blue-50 text-blue-600">
-                  <Plus className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-base text-slate-900">Add Academic Faculty Member</h3>
-                  <p className="text-xs text-slate-500">Register instructor and configure teaching capacity</p>
-                </div>
+          <div className="card-edge-gradient bg-white border border-slate-200 rounded-2xl max-w-lg w-full p-6 shadow-2xl">
+            <div className="flex items-center space-x-3 pb-4 border-b border-slate-100">
+              <div className="p-2 rounded-xl badge-navy-gradient text-[#0e0447]">
+                <Users className="w-5 h-5 text-[#0e0447]" />
               </div>
-              <button
-                onClick={() => setIsAddModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 text-lg leading-none cursor-pointer"
-              >
-                ✕
-              </button>
+              <div>
+                <h3 className="font-bold text-base text-slate-900">Register Faculty Member</h3>
+                <p className="text-xs text-slate-500">
+                  Add an academic instructor to {deptCode} departmental directory.
+                </p>
+              </div>
             </div>
 
-            <form onSubmit={handleSubmitNewInstructor} className="mt-4 space-y-4 text-xs">
+            <form onSubmit={handleSubmitNewInstructor} className="space-y-4 mt-4 text-xs">
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-slate-700 font-semibold mb-1">First Name:</label>
@@ -318,7 +315,7 @@ export const FacultyList: React.FC<FacultyListProps> = ({
                     placeholder="e.g. Margaret"
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
-                    className="w-full bg-[#f8f9fa] border border-slate-200 rounded-xl p-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/40"
+                    className="w-full bg-[#f8f9fa] border border-slate-200 rounded-xl p-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0e0447]/30"
                   />
                 </div>
                 <div>
@@ -329,7 +326,7 @@ export const FacultyList: React.FC<FacultyListProps> = ({
                     placeholder="e.g. Hamilton"
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
-                    className="w-full bg-[#f8f9fa] border border-slate-200 rounded-xl p-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/40"
+                    className="w-full bg-[#f8f9fa] border border-slate-200 rounded-xl p-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0e0447]/30"
                   />
                 </div>
               </div>
@@ -340,10 +337,10 @@ export const FacultyList: React.FC<FacultyListProps> = ({
                   <input
                     type="text"
                     required
-                    placeholder="e.g. CS-004"
+                    placeholder="e.g. EMP-109"
                     value={employeeId}
                     onChange={(e) => setEmployeeId(e.target.value)}
-                    className="w-full bg-[#f8f9fa] border border-slate-200 rounded-xl p-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/40 font-mono font-bold"
+                    className="w-full bg-[#f8f9fa] border border-slate-200 rounded-xl p-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0e0447]/30 font-mono"
                   />
                 </div>
                 <div>
@@ -353,7 +350,7 @@ export const FacultyList: React.FC<FacultyListProps> = ({
                     placeholder="e.g. margaret.hamilton@university.edu"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full bg-[#f8f9fa] border border-slate-200 rounded-xl p-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/40"
+                    className="w-full bg-[#f8f9fa] border border-slate-200 rounded-xl p-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0e0447]/30"
                   />
                 </div>
               </div>
@@ -362,14 +359,14 @@ export const FacultyList: React.FC<FacultyListProps> = ({
                 <div>
                   <label className="block text-slate-700 font-semibold mb-1">Department:</label>
                   {currentDept !== 'ALL' ? (
-                    <div className="p-2 rounded-xl bg-blue-50 border border-blue-200 text-blue-900 font-bold">
+                    <div className="p-2 rounded-xl badge-navy-gradient font-bold text-[#0e0447]">
                       {currentDept} (Scope Locked)
                     </div>
                   ) : (
                     <select
                       value={deptCode}
                       onChange={(e) => setDeptCode(e.target.value)}
-                      className="w-full bg-[#f8f9fa] border border-slate-200 rounded-xl p-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/40"
+                      className="w-full bg-[#f8f9fa] border border-slate-200 rounded-xl p-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0e0447]/30"
                     >
                       {departments.map((d) => (
                         <option key={d.code} value={d.code}>
@@ -390,7 +387,7 @@ export const FacultyList: React.FC<FacultyListProps> = ({
                     required
                     value={maxWorkload}
                     onChange={(e) => setMaxWorkload(parseFloat(e.target.value) || 12)}
-                    className="w-full bg-[#f8f9fa] border border-slate-200 rounded-xl p-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/40 font-bold text-blue-700"
+                    className="w-full bg-[#f8f9fa] border border-slate-200 rounded-xl p-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0e0447]/30 font-bold text-[#0e0447]"
                   />
                 </div>
               </div>
@@ -405,7 +402,7 @@ export const FacultyList: React.FC<FacultyListProps> = ({
                   placeholder="e.g. SOFTWARE_ENG, SYSTEMS, COMPILERS"
                   value={qualificationTags}
                   onChange={(e) => setQualificationTags(e.target.value)}
-                  className="w-full bg-[#f8f9fa] border border-slate-200 rounded-xl p-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/40 font-mono"
+                  className="w-full bg-[#f8f9fa] border border-slate-200 rounded-xl p-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0e0447]/30 font-mono"
                 />
               </div>
 
@@ -419,7 +416,7 @@ export const FacultyList: React.FC<FacultyListProps> = ({
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white shadow-xs transition-all cursor-pointer"
+                  className="btn-navy-gradient px-4 py-2 rounded-xl text-xs font-bold shadow-xs transition-all cursor-pointer"
                 >
                   Save & Register Faculty
                 </button>
