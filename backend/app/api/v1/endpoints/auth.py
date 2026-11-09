@@ -79,3 +79,4 @@ async def list_demo_users(session: AsyncSession = Depends(get_database_session))
         )
         for u in users
     ]
+

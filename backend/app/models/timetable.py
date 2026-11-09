@@ -25,9 +25,9 @@ class TimetableRun(Base):
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False
     )
 
-    semester: Mapped["AcademicSemester"] = relationship("AcademicSemester", back_populates="timetable_runs")
+    semester: Mapped["AcademicSemester"] = relationship("AcademicSemester", back_populates="timetable_runs", lazy="selectin")
     sessions: Mapped[List["ScheduledSession"]] = relationship(
-        "ScheduledSession", back_populates="timetable_run", cascade="all, delete-orphan"
+        "ScheduledSession", back_populates="timetable_run", cascade="all, delete-orphan", lazy="selectin"
     )
 
 
@@ -64,9 +64,9 @@ class ScheduledSession(Base):
         CheckConstraint("slot_duration > 0", name="chk_session_slot_duration_positive"),
     )
 
-    timetable_run: Mapped["TimetableRun"] = relationship("TimetableRun", back_populates="sessions")
-    offering: Mapped["CourseOffering"] = relationship("CourseOffering")
-    component: Mapped["CourseComponent"] = relationship("CourseComponent")
-    instructor: Mapped["Instructor"] = relationship("Instructor")
-    classroom: Mapped["Classroom"] = relationship("Classroom")
+    timetable_run: Mapped["TimetableRun"] = relationship("TimetableRun", back_populates="sessions", lazy="selectin")
+    offering: Mapped["CourseOffering"] = relationship("CourseOffering", lazy="selectin")
+    component: Mapped["CourseComponent"] = relationship("CourseComponent", lazy="selectin")
+    instructor: Mapped["Instructor"] = relationship("Instructor", lazy="selectin")
+    classroom: Mapped["Classroom"] = relationship("Classroom", lazy="selectin")
 

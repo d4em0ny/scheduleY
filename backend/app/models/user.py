@@ -33,3 +33,4 @@ class User(Base):
     )
 
     department: Mapped[Optional["Department"]] = relationship("Department", lazy="selectin")
+

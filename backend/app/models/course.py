@@ -76,12 +76,12 @@ class CourseOffering(Base):
         UniqueConstraint("semester_id", "course_id", "section_id", name="uq_offering_course_section"),
     )
 
-    semester: Mapped["AcademicSemester"] = relationship("AcademicSemester", back_populates="course_offerings")
-    course: Mapped["Course"] = relationship("Course", back_populates="offerings")
-    section: Mapped["StudentSection"] = relationship("StudentSection", back_populates="course_offerings")
+    semester: Mapped["AcademicSemester"] = relationship("AcademicSemester", back_populates="course_offerings", lazy="selectin")
+    course: Mapped["Course"] = relationship("Course", back_populates="offerings", lazy="selectin")
+    section: Mapped["StudentSection"] = relationship("StudentSection", back_populates="course_offerings", lazy="selectin")
     allocations: Mapped[List["InstructorAllocation"]] = relationship(
-        "InstructorAllocation", back_populates="offering", cascade="all, delete-orphan"
+        "InstructorAllocation", back_populates="offering", cascade="all, delete-orphan", lazy="selectin"
     )
     requests: Mapped[List["InterdepartmentalRequest"]] = relationship(
-        "InterdepartmentalRequest", back_populates="offering", cascade="all, delete-orphan"
+        "InterdepartmentalRequest", back_populates="offering", cascade="all, delete-orphan", lazy="selectin"
     )

@@ -113,4 +113,46 @@ async def test_api_full_setup_workflow(db_session: AsyncSession):
         assert wl_data["committed_hours"] == 0.0
         assert wl_data["held_hours"] == 0.0
 
+        # 6. Create Course and Component
+        course_resp = await client.post(
+            "/api/v1/courses",
+            json={
+                "department_id": dept_id,
+                "code": "CS-101",
+                "title": "Intro to Computing",
+                "credit_hours": 3.0,
+                "required_qualification_tag": "COMPILERS",
+                "components": [
+                    {
+                        "component_type": "REGULAR_CLASSROOM",
+                        "weekly_sessions": 2,
+                        "session_duration_slots": 1,
+                        "weekly_contact_hours": 2.0,
+                        "weekly_teaching_credits": 2.0,
+                    }
+                ],
+            },
+        )
+        assert course_resp.status_code == 201
+        course_id = course_resp.json()["id"]
+
+        # 7. Create Offering
+        offering_resp = await client.post(
+            "/api/v1/courses/offerings",
+            json={
+                "semester_id": sem_id,
+                "course_id": course_id,
+                "section_id": sec_data["id"],
+            },
+        )
+        assert offering_resp.status_code == 201
+
+        # 8. Test Timetable Generation
+        gen_resp = await client.post(f"/api/v1/timetables/generate?semester_id={sem_id}")
+        assert gen_resp.status_code == 201
+        gen_data = gen_resp.json()
+        assert gen_data["solver_status"] in ["OPTIMAL", "FEASIBLE"]
+        assert len(gen_data["sessions"]) == 2
+        assert gen_data["sessions"][0]["room_number"] == "Room 301"
+
     app.dependency_overrides.clear()

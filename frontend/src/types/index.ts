@@ -118,3 +118,30 @@ export interface AllocationRecommendation {
   status: 'RECOMMENDED' | 'NO_QUALIFIED_INSTRUCTOR' | 'COMMITTED';
 }
 
+export interface CourseOfferingItem {
+  id: string;
+  departmentCode: string;
+  courseCode: string;
+  courseTitle: string;
+  creditHours: number;
+  contactHours: number;
+  weeklySessions: number;
+  componentType: RoomCategory;
+  batchYear: number; // 2024 (Year 1), 2023 (Year 2), 2022 (Year 3), 2021 (Year 4)
+  yearLabel: 'Year 1' | 'Year 2' | 'Year 3' | 'Year 4';
+  sectionName: string;
+  assignedRoomNumber: string;
+  assignedInstructorName?: string;
+  assignedInstructorId?: string;
+  requiredQualification: string;
+}
+
+export type ActiveNavTab =
+  | 'timetable'
+  | 'courses'
+  | 'faculty'
+  | 'coordination'
+  | 'workload'
+  | 'allocations';
+
+

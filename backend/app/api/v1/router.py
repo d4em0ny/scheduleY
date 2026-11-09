@@ -7,6 +7,8 @@ from backend.app.api.v1.endpoints import (
     coordination,
     allocations,
     auth,
+    courses,
+    timetables,
 )
 
 api_router = APIRouter()
@@ -17,4 +19,6 @@ api_router.include_router(instructors.router)
 api_router.include_router(sections.router)
 api_router.include_router(coordination.router)
 api_router.include_router(allocations.router)
+api_router.include_router(courses.router)
+api_router.include_router(timetables.router)
 

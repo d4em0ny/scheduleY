@@ -1,6 +1,6 @@
 import uuid
-from typing import List
-from fastapi import APIRouter, Depends, HTTPException, status
+from typing import List, Optional
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -17,6 +17,33 @@ from backend.app.schemas.instructor import (
 from backend.app.services.workload_service import WorkloadService
 
 router = APIRouter(prefix="/instructors", tags=["Instructors & Workload"])
+
+
+@router.get("", response_model=List[InstructorRead])
+async def list_instructors(
+    department_id: Optional[uuid.UUID] = Query(None, description="Filter by department ID"),
+    session: AsyncSession = Depends(get_database_session),
+):
+    stmt = select(Instructor).order_by(Instructor.last_name, Instructor.first_name)
+    if department_id:
+        stmt = stmt.where(Instructor.department_id == department_id)
+    result = await session.execute(stmt)
+    instructors = result.scalars().all()
+
+    return [
+        InstructorRead(
+            id=i.id,
+            department_id=i.department_id,
+            employee_id=i.employee_id,
+            first_name=i.first_name,
+            last_name=i.last_name,
+            email=i.email,
+            max_weekly_workload=i.max_weekly_workload,
+            is_active=i.is_active,
+            qualification_tags=[q.qualification_tag for q in i.qualifications],
+        )
+        for i in instructors
+    ]
 
 
 @router.post("", response_model=InstructorRead, status_code=status.HTTP_201_CREATED)

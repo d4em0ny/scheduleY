@@ -10,15 +10,17 @@ import {
   ChevronDown,
   Check,
   UserCheck,
+  Users,
+  BookOpen,
 } from 'lucide-react';
-import type { Department, User } from '../types';
+import type { Department, User, ActiveNavTab } from '../types';
 
 interface HeaderProps {
   departments: Department[];
   selectedDept: string;
   onSelectDept: (deptCode: string) => void;
-  activeTab: 'timetable' | 'coordination' | 'workload' | 'allocations';
-  onSelectTab: (tab: 'timetable' | 'coordination' | 'workload' | 'allocations') => void;
+  activeTab: ActiveNavTab;
+  onSelectTab: (tab: ActiveNavTab) => void;
   pendingRequestsCount: number;
   currentUser: User;
   onSelectUser: (user: User) => void;
@@ -122,7 +124,7 @@ export const Header: React.FC<HeaderProps> = ({
             <div className="relative" ref={menuRef}>
               <button
                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                className="flex items-center space-x-2 bg-slate-800 hover:bg-slate-700/80 border border-slate-700/70 rounded-lg px-2.5 py-1.5 text-xs font-medium text-slate-200 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                className="flex items-center space-x-2 bg-slate-800 hover:bg-slate-700/80 border border-slate-700/70 rounded-lg px-2.5 py-1.5 text-xs font-medium text-slate-200 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500/50 cursor-pointer"
               >
                 <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-indigo-600 to-indigo-400 flex items-center justify-center text-white font-bold text-[11px] shadow-sm">
                   {currentUser.fullName
@@ -164,7 +166,7 @@ export const Header: React.FC<HeaderProps> = ({
                             onSelectUser(u);
                             setIsUserMenuOpen(false);
                           }}
-                          className={`w-full text-left px-3 py-2 text-xs flex items-center justify-between transition-colors ${
+                          className={`w-full text-left px-3 py-2 text-xs flex items-center justify-between transition-colors cursor-pointer ${
                             isSelected
                               ? 'bg-indigo-600/15 text-indigo-200 font-semibold border-l-2 border-indigo-500'
                               : 'text-slate-300 hover:bg-slate-800 hover:text-white'
@@ -213,26 +215,50 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex space-x-1 overflow-x-auto pb-1 pt-2 border-t border-slate-800/80 scrollbar-none">
           <button
             onClick={() => onSelectTab('timetable')}
-            className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+            className={`flex items-center space-x-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer flex-shrink-0 ${
               activeTab === 'timetable'
                 ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
             }`}
           >
             <Calendar className="w-4 h-4" />
-            <span>Weekly Timetable Matrix</span>
+            <span>Weekly Matrix</span>
+          </button>
+
+          <button
+            onClick={() => onSelectTab('courses')}
+            className={`flex items-center space-x-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer flex-shrink-0 ${
+              activeTab === 'courses'
+                ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+            }`}
+          >
+            <BookOpen className="w-4 h-4" />
+            <span>Courses by Year</span>
+          </button>
+
+          <button
+            onClick={() => onSelectTab('faculty')}
+            className={`flex items-center space-x-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer flex-shrink-0 ${
+              activeTab === 'faculty'
+                ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+            }`}
+          >
+            <Users className="w-4 h-4" />
+            <span>Faculty Directory</span>
           </button>
 
           <button
             onClick={() => onSelectTab('coordination')}
-            className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-all relative ${
+            className={`flex items-center space-x-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer flex-shrink-0 relative ${
               activeTab === 'coordination'
                 ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
             }`}
           >
             <GitPullRequest className="w-4 h-4" />
-            <span>Department Coordination</span>
+            <span>Coordination Hub</span>
             {pendingRequestsCount > 0 && (
               <span className="ml-1.5 px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-amber-500 text-slate-950">
                 {pendingRequestsCount}
@@ -242,26 +268,26 @@ export const Header: React.FC<HeaderProps> = ({
 
           <button
             onClick={() => onSelectTab('workload')}
-            className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+            className={`flex items-center space-x-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer flex-shrink-0 ${
               activeTab === 'workload'
                 ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
             }`}
           >
             <Gauge className="w-4 h-4" />
-            <span>Faculty Workload Gauges</span>
+            <span>Workload Gauges</span>
           </button>
 
           <button
             onClick={() => onSelectTab('allocations')}
-            className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+            className={`flex items-center space-x-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer flex-shrink-0 ${
               activeTab === 'allocations'
                 ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
             }`}
           >
             <Sparkles className="w-4 h-4" />
-            <span>Internal Allocation Engine</span>
+            <span>Matching Engine</span>
           </button>
         </div>
       </div>
