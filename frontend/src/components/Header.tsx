@@ -60,7 +60,7 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex items-center justify-between h-16">
           {/* Logo & Identity */}
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#0e0447] via-[#1a1154] to-[#281b69] flex items-center justify-center font-black text-xl text-white shadow-xs border border-[#0e0447]/40">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#0088D9] via-[#3C8DBC] to-[#00C0EF] flex items-center justify-center font-black text-xl text-white shadow-xs">
               Y
             </div>
             <div>
@@ -68,7 +68,7 @@ export const Header: React.FC<HeaderProps> = ({
                 <span className="font-extrabold text-lg tracking-tight text-slate-900">
                   scheduleY
                 </span>
-                <span className="text-[10px] px-2 py-0.5 rounded-full badge-navy-gradient font-bold">
+                <span className="text-[10px] px-2 py-0.5 rounded-full badge-primary-soft font-bold">
                   Academic Platform
                 </span>
               </div>
@@ -83,19 +83,19 @@ export const Header: React.FC<HeaderProps> = ({
             {/* Department Context */}
             {isChair ? (
               <div
-                className="flex items-center space-x-2 badge-navy-gradient px-3 py-1.5 rounded-xl text-xs font-semibold shadow-2xs"
+                className="flex items-center space-x-2 badge-primary-soft px-3 py-1.5 rounded-xl text-xs font-semibold shadow-2xs"
                 title={`Security scope restricted to ${currentUser.departmentCode} department`}
               >
-                <Lock className="w-3.5 h-3.5 text-[#0e0447]" />
-                <span className="text-slate-500 hidden md:inline">Scope:</span>
-                <span className="font-bold text-[#0e0447]">{currentUser.departmentCode}</span>
-                <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-[#0e0447]/15 text-[#0e0447] font-bold">
+                <Lock className="w-3.5 h-3.5 text-[#0088D9]" />
+                <span className="text-slate-600 hidden md:inline">Scope:</span>
+                <span className="font-bold text-[#0088D9]">{currentUser.departmentCode}</span>
+                <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-[#0088D9]/15 text-[#0073B7] font-bold">
                   Locked
                 </span>
               </div>
             ) : (
-              <div className="flex items-center space-x-2 bg-[#f8f9fa] px-3 py-1.5 rounded-xl border border-slate-200 text-xs">
-                <Building2 className="w-4 h-4 text-[#0e0447]" />
+              <div className="flex items-center space-x-2 bg-[#f4f6f9] px-3 py-1.5 rounded-xl border border-slate-200 text-xs">
+                <Building2 className="w-4 h-4 text-[#0088D9]" />
                 <span className="text-slate-500 hidden sm:inline">Department:</span>
                 <select
                   value={selectedDept}
@@ -113,8 +113,8 @@ export const Header: React.FC<HeaderProps> = ({
             )}
 
             {/* Term Pill */}
-            <div className="hidden lg:flex items-center space-x-1.5 px-2.5 py-1 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+            <div className="hidden lg:flex items-center space-x-1.5 px-2.5 py-1 rounded-xl badge-success-soft text-xs font-semibold">
+              <ShieldCheck className="w-3.5 h-3.5 text-[#00A65A]" />
               <span>Fall 2026 Active</span>
             </div>
 
@@ -122,9 +122,9 @@ export const Header: React.FC<HeaderProps> = ({
             <div className="relative" ref={menuRef}>
               <button
                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                className="flex items-center space-x-2 bg-[#f8f9fa] hover:bg-slate-100 border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs font-medium text-slate-800 transition-all focus:outline-none focus:ring-2 focus:ring-[#0e0447]/30 cursor-pointer"
+                className="flex items-center space-x-2 bg-[#f4f6f9] hover:bg-[#e9edf2] border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs font-medium text-slate-800 transition-all focus:outline-none focus:ring-2 focus:ring-[#0088D9]/35 cursor-pointer"
               >
-                <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-[#0e0447] to-[#251b68] flex items-center justify-center text-white font-bold text-[11px] shadow-xs">
+                <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-[#0088D9] to-[#3C8DBC] flex items-center justify-center text-white font-bold text-[11px] shadow-xs">
                   {currentUser.fullName
                     .split(' ')
                     .map((n) => n[0])
@@ -166,12 +166,12 @@ export const Header: React.FC<HeaderProps> = ({
                           }}
                           className={`w-full text-left px-3.5 py-2.5 text-xs flex items-center justify-between transition-colors cursor-pointer ${
                             isSelected
-                              ? 'bg-gradient-to-r from-[#0e0447]/10 to-[#f5f5f7] text-[#0e0447] font-bold border-l-3 border-[#0e0447]'
-                              : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'
+                              ? 'bg-[#0088D9]/8 text-[#0088D9] font-bold border-l-3 border-[#0088D9]'
+                              : 'text-slate-700 hover:bg-[#f4f6f9] hover:text-slate-900'
                           }`}
                         >
                           <div className="flex items-center space-x-2.5">
-                            <div className="w-7 h-7 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center font-bold text-slate-700 text-xs">
+                            <div className="w-7 h-7 rounded-lg bg-[#D2D6DE]/50 border border-slate-200 flex items-center justify-center font-bold text-slate-700 text-xs">
                               {u.fullName
                                 .split(' ')
                                 .map((n) => n[0])
@@ -187,14 +187,14 @@ export const Header: React.FC<HeaderProps> = ({
                               </div>
                             </div>
                           </div>
-                          {isSelected && <Check className="w-4 h-4 text-[#0e0447]" />}
+                          {isSelected && <Check className="w-4 h-4 text-[#0088D9]" />}
                         </button>
                       );
                     })}
                   </div>
 
-                  <div className="px-3.5 py-2 mt-1 border-t border-slate-100 bg-[#f8f9fa] text-[11px] text-slate-500 flex items-center space-x-1.5 rounded-b-2xl">
-                    <UserCheck className="w-3.5 h-3.5 text-[#0e0447]" />
+                  <div className="px-3.5 py-2 mt-1 border-t border-slate-100 bg-[#f4f6f9] text-[11px] text-slate-500 flex items-center space-x-1.5 rounded-b-2xl">
+                    <UserCheck className="w-3.5 h-3.5 text-[#0088D9]" />
                     <span>
                       Active: {currentUser.fullName} (
                       {currentUser.role === 'UNIVERSITY_ADMIN'
@@ -215,8 +215,8 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={() => onSelectTab('timetable')}
             className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer flex-shrink-0 ${
               activeTab === 'timetable'
-                ? 'tab-navy-active'
-                : 'text-slate-600 hover:text-[#0e0447] hover:bg-[#f5f5f7]'
+                ? 'tab-primary-active'
+                : 'text-slate-600 hover:text-[#0088D9] hover:bg-[#f4f6f9]'
             }`}
           >
             <Calendar className="w-4 h-4" />
@@ -227,8 +227,8 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={() => onSelectTab('courses')}
             className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer flex-shrink-0 ${
               activeTab === 'courses'
-                ? 'tab-navy-active'
-                : 'text-slate-600 hover:text-[#0e0447] hover:bg-[#f5f5f7]'
+                ? 'tab-primary-active'
+                : 'text-slate-600 hover:text-[#0088D9] hover:bg-[#f4f6f9]'
             }`}
           >
             <BookOpen className="w-4 h-4" />
@@ -239,8 +239,8 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={() => onSelectTab('faculty')}
             className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer flex-shrink-0 ${
               activeTab === 'faculty'
-                ? 'tab-navy-active'
-                : 'text-slate-600 hover:text-[#0e0447] hover:bg-[#f5f5f7]'
+                ? 'tab-primary-active'
+                : 'text-slate-600 hover:text-[#0088D9] hover:bg-[#f4f6f9]'
             }`}
           >
             <Users className="w-4 h-4" />
@@ -251,14 +251,14 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={() => onSelectTab('coordination')}
             className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer flex-shrink-0 relative ${
               activeTab === 'coordination'
-                ? 'tab-navy-active'
-                : 'text-slate-600 hover:text-[#0e0447] hover:bg-[#f5f5f7]'
+                ? 'tab-primary-active'
+                : 'text-slate-600 hover:text-[#0088D9] hover:bg-[#f4f6f9]'
             }`}
           >
             <GitPullRequest className="w-4 h-4" />
             <span>Coordination Hub</span>
             {pendingRequestsCount > 0 && (
-              <span className="ml-1.5 px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-amber-500 text-white">
+              <span className="ml-1.5 px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-[#00C0EF] text-white">
                 {pendingRequestsCount}
               </span>
             )}
@@ -268,8 +268,8 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={() => onSelectTab('workload')}
             className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer flex-shrink-0 ${
               activeTab === 'workload'
-                ? 'tab-navy-active'
-                : 'text-slate-600 hover:text-[#0e0447] hover:bg-[#f5f5f7]'
+                ? 'tab-primary-active'
+                : 'text-slate-600 hover:text-[#0088D9] hover:bg-[#f4f6f9]'
             }`}
           >
             <Gauge className="w-4 h-4" />
@@ -280,8 +280,8 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={() => onSelectTab('allocations')}
             className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer flex-shrink-0 ${
               activeTab === 'allocations'
-                ? 'tab-navy-active'
-                : 'text-slate-600 hover:text-[#0e0447] hover:bg-[#f5f5f7]'
+                ? 'tab-primary-active'
+                : 'text-slate-600 hover:text-[#0088D9] hover:bg-[#f4f6f9]'
             }`}
           >
             <Sparkles className="w-4 h-4" />
@@ -289,7 +289,7 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
         </div>
       </div>
-      <div className="h-[2px] w-full bg-gradient-to-r from-[#0e0447] via-[#0e0447]/30 to-[#f5f5f7]" />
+      <div className="h-[2.5px] w-full bg-gradient-to-r from-[#0088D9] via-[#3C8DBC] to-[#00C0EF]" />
     </header>
   );
 };

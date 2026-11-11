@@ -2,23 +2,28 @@
 
 :root {
   color-scheme: light;
-  --color-navy: #0e0447;
-  --color-whitesmoke: #f5f5f7;
+  --color-primary: #0088D9;
+  --color-secondary: #3C8DBC;
+  --color-accent: #00C0EF;
+  --color-success: #00A65A;
+  --color-background: #D2D6DE;
+  --color-surface: #FFFFFF;
 }
 
 body {
   margin: 0;
   padding: 0;
-  background-color: #f5f5f7; /* Whitesmoke canvas */
-  color: #0f172a; /* Slate-900 */
+  background-color: #D2D6DE; /* Requested Background */
+  color: #1e293b; /* Crisp Slate-800 typography */
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   min-height: 100vh;
 }
 
-/* Gradient edge for cards combining #0e0447 with whitesmoke */
+/* Top gradient accent edge on primary surface cards */
 .card-edge-gradient {
   position: relative;
   overflow: hidden;
+  background-color: #FFFFFF;
 }
 
 .card-edge-gradient::before {
@@ -27,13 +32,13 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  height: 2.5px;
-  background: linear-gradient(90deg, #0e0447 0%, rgba(14, 4, 71, 0.45) 40%, #f5f5f7 100%);
+  height: 3px;
+  background: linear-gradient(90deg, #0088D9 0%, #3C8DBC 55%, #00C0EF 100%);
   z-index: 10;
   pointer-events: none;
 }
 
-/* Subtle gradient edge for inner cards and timetable slots */
+/* Subtle top accent edge for inner cards & slots */
 .card-edge-subtle {
   position: relative;
   overflow: hidden;
@@ -46,34 +51,41 @@ body {
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(90deg, #0e0447 0%, rgba(14, 4, 71, 0.35) 45%, rgba(245, 245, 247, 0.9) 100%);
+  background: linear-gradient(90deg, #3C8DBC 0%, #0088D9 50%, #00C0EF 100%);
   z-index: 10;
   pointer-events: none;
 }
 
-/* Primary actions using the refined navy gradient instead of solid flat color */
-.btn-navy-gradient {
-  background: linear-gradient(135deg, #0e0447 0%, #19124f 55%, #251b68 100%);
-  color: #ffffff;
-  border: 1px solid rgba(14, 4, 71, 0.35);
+/* Primary interactive action buttons */
+.btn-primary-gradient {
+  background: linear-gradient(135deg, #0088D9 0%, #3C8DBC 100%);
+  color: #FFFFFF;
+  border: 1px solid #3C8DBC;
   transition: all 0.2s ease;
 }
 
-.btn-navy-gradient:hover {
-  background: linear-gradient(135deg, #150957 0%, #231968 55%, #322485 100%);
-  box-shadow: 0 4px 14px rgba(14, 4, 71, 0.22);
+.btn-primary-gradient:hover {
+  background: linear-gradient(135deg, #0077BE 0%, #3379A3 100%);
+  box-shadow: 0 4px 12px rgba(0, 136, 217, 0.28);
 }
 
-/* Badges combining #0e0447 with whitesmoke gradient */
-.badge-navy-gradient {
-  background: linear-gradient(90deg, rgba(14, 4, 71, 0.08) 0%, rgba(245, 245, 247, 0.9) 100%);
-  border: 1px solid rgba(14, 4, 71, 0.22);
-  color: #0e0447;
+/* Badges combining Accent (#00C0EF) tint with Secondary (#3C8DBC) border & high-contrast Primary text */
+.badge-primary-soft {
+  background: linear-gradient(90deg, rgba(0, 136, 217, 0.1) 0%, rgba(0, 192, 239, 0.12) 100%);
+  border: 1px solid rgba(60, 141, 188, 0.35);
+  color: #0073B7;
 }
 
-/* Tab active gradient */
-.tab-navy-active {
-  background: linear-gradient(135deg, #0e0447 0%, #18114c 60%, #231a64 100%);
-  color: #ffffff;
-  box-shadow: 0 1px 3px rgba(14, 4, 71, 0.2);
+/* Success badges using #00A65A */
+.badge-success-soft {
+  background-color: rgba(0, 166, 90, 0.1);
+  border: 1px solid rgba(0, 166, 90, 0.32);
+  color: #008d4c;
+}
+
+/* Active tab indicator */
+.tab-primary-active {
+  background: linear-gradient(135deg, #0088D9 0%, #3C8DBC 100%);
+  color: #FFFFFF;
+  box-shadow: 0 2px 6px rgba(0, 136, 217, 0.25);
 }

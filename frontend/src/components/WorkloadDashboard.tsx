@@ -26,7 +26,7 @@ export const WorkloadDashboard: React.FC<WorkloadDashboardProps> = ({
         <div className="card-edge-gradient bg-white border border-slate-200/90 rounded-2xl p-4 shadow-xs">
           <div className="flex items-center justify-between text-slate-500 text-xs mb-1 font-medium">
             <span>Faculty Monitored</span>
-            <Users className="w-4 h-4 text-[#0e0447]" />
+            <Users className="w-4 h-4 text-[#0088D9]" />
           </div>
           <div className="text-2xl font-bold text-slate-900">{filteredInstructors.length}</div>
           <p className="text-[11px] text-slate-400 mt-1">Across active departments</p>
@@ -35,27 +35,27 @@ export const WorkloadDashboard: React.FC<WorkloadDashboardProps> = ({
         <div className="card-edge-gradient bg-white border border-slate-200/90 rounded-2xl p-4 shadow-xs">
           <div className="flex items-center justify-between text-slate-500 text-xs mb-1 font-medium">
             <span>Total Committed Load</span>
-            <CheckCircle className="w-4 h-4 text-emerald-600" />
+            <CheckCircle className="w-4 h-4 text-[#00A65A]" />
           </div>
-          <div className="text-2xl font-bold text-emerald-600">{totalCommitted.toFixed(1)} hrs</div>
+          <div className="text-2xl font-bold text-[#00A65A]">{totalCommitted.toFixed(1)} hrs</div>
           <p className="text-[11px] text-slate-400 mt-1">Confirmed course offerings</p>
         </div>
 
         <div className="card-edge-gradient bg-white border border-slate-200/90 rounded-2xl p-4 shadow-xs">
           <div className="flex items-center justify-between text-slate-500 text-xs mb-1 font-medium">
             <span>Active Holds in Escrow</span>
-            <AlertTriangle className="w-4 h-4 text-amber-500" />
+            <AlertTriangle className="w-4 h-4 text-[#3C8DBC]" />
           </div>
-          <div className="text-2xl font-bold text-amber-600">{totalHeld.toFixed(1)} hrs</div>
+          <div className="text-2xl font-bold text-[#3C8DBC]">{totalHeld.toFixed(1)} hrs</div>
           <p className="text-[11px] text-slate-400 mt-1">Pending interdepartmental offers</p>
         </div>
 
         <div className="card-edge-gradient bg-white border border-slate-200/90 rounded-2xl p-4 shadow-xs">
           <div className="flex items-center justify-between text-slate-500 text-xs mb-1 font-medium">
             <span>Overall Utilization</span>
-            <Gauge className="w-4 h-4 text-[#0e0447]" />
+            <Gauge className="w-4 h-4 text-[#00C0EF]" />
           </div>
-          <div className="text-2xl font-bold text-[#0e0447]">{utilizationRate.toFixed(1)}%</div>
+          <div className="text-2xl font-bold text-[#0088D9]">{utilizationRate.toFixed(1)}%</div>
           <p className="text-[11px] text-slate-400 mt-1">Of university capacity limit</p>
         </div>
       </div>
@@ -65,7 +65,7 @@ export const WorkloadDashboard: React.FC<WorkloadDashboardProps> = ({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-3 border-b border-slate-100">
           <div>
             <h3 className="font-bold text-base text-slate-900 flex items-center space-x-2">
-              <ShieldCheck className="w-5 h-5 text-[#0e0447]" />
+              <ShieldCheck className="w-5 h-5 text-[#0088D9]" />
               <span>Faculty Workload & Quota Registry</span>
             </h3>
             <p className="text-xs text-slate-500 mt-0.5">
@@ -75,15 +75,15 @@ export const WorkloadDashboard: React.FC<WorkloadDashboardProps> = ({
 
           <div className="flex items-center space-x-4 text-xs">
             <span className="flex items-center space-x-1.5 text-slate-600">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#0e0447]" />
+              <span className="w-2.5 h-2.5 rounded-full bg-[#0088D9]" />
               <span className="font-medium">Committed</span>
             </span>
             <span className="flex items-center space-x-1.5 text-slate-600">
-              <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
+              <span className="w-2.5 h-2.5 rounded-full bg-[#00A65A]" />
               <span className="font-medium">Held in Escrow</span>
             </span>
             <span className="flex items-center space-x-1.5 text-slate-600">
-              <span className="w-2.5 h-2.5 rounded-full bg-slate-300" />
+              <span className="w-2.5 h-2.5 rounded-full bg-[#D2D6DE]" />
               <span className="font-medium">Available</span>
             </span>
           </div>
@@ -100,13 +100,13 @@ export const WorkloadDashboard: React.FC<WorkloadDashboardProps> = ({
             return (
               <div
                 key={inst.id}
-                className="card-edge-subtle bg-[#f8f9fa] border border-slate-200/80 rounded-xl p-4 shadow-2xs hover:border-[#0e0447]/40 transition-all"
+                className="card-edge-subtle bg-[#f4f6f9] border border-slate-200/80 rounded-xl p-4 shadow-2xs hover:border-[#0088D9]/50 transition-all"
               >
                 <div className="flex items-start justify-between mb-2">
                   <div>
                     <h4 className="font-bold text-sm text-slate-900">{inst.name}</h4>
                     <div className="flex items-center space-x-2 text-xs text-slate-500 mt-0.5">
-                      <span className="badge-navy-gradient font-semibold px-2 py-0.2 rounded-md">
+                      <span className="badge-primary-soft font-semibold px-2 py-0.2 rounded-md">
                         {inst.departmentCode}
                       </span>
                       <span>•</span>
@@ -118,7 +118,7 @@ export const WorkloadDashboard: React.FC<WorkloadDashboardProps> = ({
                     className={`text-[11px] px-2.5 py-0.5 rounded-full font-semibold border ${
                       isNearCapacity
                         ? 'bg-amber-50 text-amber-700 border-amber-200'
-                        : 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                        : 'badge-success-soft'
                     }`}
                   >
                     {isNearCapacity ? 'Near Cap' : 'Capacity Safe'}
@@ -131,18 +131,18 @@ export const WorkloadDashboard: React.FC<WorkloadDashboardProps> = ({
                     <span className="text-slate-700">
                       Total Allocated: {totalUsed.toFixed(1)} / {inst.maxWeeklyWorkload} hrs
                     </span>
-                    <span className="text-[#0e0447] font-medium">{remaining.toFixed(1)} hrs free</span>
+                    <span className="text-[#0088D9] font-medium">{remaining.toFixed(1)} hrs free</span>
                   </div>
 
-                  <div className="w-full h-2.5 bg-slate-200 rounded-full overflow-hidden flex shadow-inner">
+                  <div className="w-full h-2.5 bg-[#D2D6DE]/70 rounded-full overflow-hidden flex shadow-inner">
                     <div
                       style={{ width: `${committedPct}%` }}
-                      className="bg-gradient-to-r from-[#0e0447] to-[#251b68] h-full transition-all duration-500"
+                      className="bg-gradient-to-r from-[#0088D9] to-[#00C0EF] h-full transition-all duration-500"
                       title={`Committed: ${inst.committedHours}h`}
                     />
                     <div
                       style={{ width: `${heldPct}%` }}
-                      className="bg-amber-500 h-full transition-all duration-500"
+                      className="bg-[#00A65A] h-full transition-all duration-500"
                       title={`Held: ${inst.heldHours}h`}
                     />
                   </div>
@@ -153,7 +153,7 @@ export const WorkloadDashboard: React.FC<WorkloadDashboardProps> = ({
                   {inst.qualifications.map((q) => (
                     <span
                       key={q}
-                      className="badge-navy-gradient px-2 py-0.5 rounded text-[10px] font-mono font-medium"
+                      className="badge-primary-soft px-2 py-0.5 rounded text-[10px] font-mono font-medium"
                     >
                       {q}
                     </span>

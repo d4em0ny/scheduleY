@@ -187,15 +187,15 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
     switch (status) {
       case 'ACCEPTED':
         return (
-          <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-            <CheckCircle2 className="w-3.5 h-3.5" />
+          <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-xs font-bold badge-success-soft">
+            <CheckCircle2 className="w-3.5 h-3.5 text-[#00A65A]" />
             <span>Accepted & Assigned</span>
           </span>
         );
       case 'OFFERED':
         return (
-          <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-xs font-bold badge-navy-gradient text-[#0e0447]">
-            <Clock className="w-3.5 h-3.5 text-[#0e0447]" />
+          <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-xs font-bold badge-primary-soft">
+            <Clock className="w-3.5 h-3.5 text-[#0088D9]" />
             <span>Instructor Provided</span>
           </span>
         );
@@ -208,15 +208,15 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
         );
       case 'UNDER_REVIEW':
         return (
-          <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-xs font-bold badge-navy-gradient text-[#0e0447]">
-            <Clock className="w-3.5 h-3.5 text-[#0e0447]" />
+          <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-xs font-bold badge-primary-soft">
+            <Clock className="w-3.5 h-3.5 text-[#3C8DBC]" />
             <span>Under Review</span>
           </span>
         );
       default:
         return (
-          <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
-            <Clock className="w-3.5 h-3.5" />
+          <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#00C0EF]/12 text-[#0073B7] border border-[#00C0EF]/35">
+            <Clock className="w-3.5 h-3.5 text-[#0088D9]" />
             <span>Awaiting Instructor</span>
           </span>
         );
@@ -333,8 +333,8 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
       {/* Control bar */}
       <div className="card-edge-gradient flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white border border-slate-200/90 p-4 rounded-2xl shadow-xs">
         <div className="flex items-center space-x-2.5">
-          <div className="p-2 rounded-xl badge-navy-gradient text-[#0e0447]">
-            <GitPullRequest className="w-5 h-5 text-[#0e0447]" />
+          <div className="p-2 rounded-xl badge-primary-soft">
+            <GitPullRequest className="w-5 h-5 text-[#0088D9]" />
           </div>
           <div>
             <h2 className="font-bold text-sm text-slate-900">
@@ -347,13 +347,13 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
         </div>
 
         <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
-          <div className="flex p-1 bg-[#f5f5f7] rounded-xl border border-slate-200 text-xs">
+          <div className="flex p-1 bg-[#D2D6DE]/40 rounded-xl border border-slate-200 text-xs">
             <button
               onClick={() => setFilterDirection('all')}
               className={`px-3 py-1.5 rounded-lg font-semibold transition-all cursor-pointer ${
                 filterDirection === 'all'
-                  ? 'tab-navy-active'
-                  : 'text-slate-600 hover:text-[#0e0447]'
+                  ? 'tab-primary-active'
+                  : 'text-slate-600 hover:text-[#0088D9]'
               }`}
             >
               All ({filteredRequests.length})
@@ -362,8 +362,8 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
               onClick={() => setFilterDirection('incoming')}
               className={`px-3 py-1.5 rounded-lg font-semibold transition-all cursor-pointer ${
                 filterDirection === 'incoming'
-                  ? 'tab-navy-active'
-                  : 'text-slate-600 hover:text-[#0e0447]'
+                  ? 'tab-primary-active'
+                  : 'text-slate-600 hover:text-[#0088D9]'
               }`}
             >
               Incoming Requests
@@ -372,8 +372,8 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
               onClick={() => setFilterDirection('outgoing')}
               className={`px-3 py-1.5 rounded-lg font-semibold transition-all cursor-pointer ${
                 filterDirection === 'outgoing'
-                  ? 'tab-navy-active'
-                  : 'text-slate-600 hover:text-[#0e0447]'
+                  ? 'tab-primary-active'
+                  : 'text-slate-600 hover:text-[#0088D9]'
               }`}
             >
               Sent Requests
@@ -402,7 +402,7 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
               }
               setIsCreateModalOpen(true);
             }}
-            className="btn-navy-gradient flex items-center space-x-1.5 px-4 py-2 rounded-xl text-xs font-bold shadow-xs cursor-pointer"
+            className="btn-primary-gradient flex items-center space-x-1.5 px-4 py-2 rounded-xl text-xs font-bold shadow-xs cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>Ask Instructor from Dept</span>
@@ -428,17 +428,17 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
             return (
               <div
                 key={req.id}
-                className="card-edge-gradient bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs hover:border-[#0e0447]/40 hover:shadow-md transition-all"
+                className="card-edge-gradient bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs hover:border-[#0088D9]/50 hover:shadow-md transition-all"
               >
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-3 border-b border-slate-100">
                   <div className="flex items-center space-x-3">
-                    <span className="badge-navy-gradient font-mono text-xs font-bold px-2.5 py-0.5 rounded-lg text-[#0e0447]">
+                    <span className="badge-primary-soft font-mono text-xs font-bold px-2.5 py-0.5 rounded-lg">
                       {req.requestNumber}
                     </span>
                     <div className="flex items-center space-x-2 text-xs font-bold text-slate-700">
-                      <span className="text-[#0e0447]">{req.requestingDept}</span>
+                      <span className="text-[#0088D9]">{req.requestingDept}</span>
                       <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
-                      <span className="text-cyan-700">{req.supplyingDept}</span>
+                      <span className="text-[#3C8DBC]">{req.supplyingDept}</span>
                     </div>
                   </div>
 
@@ -459,8 +459,8 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
 
                   <div>
                     <span className="text-slate-400 block mb-0.5 font-medium">Request Type:</span>
-                    <div className="inline-flex items-center space-x-1.5 mt-0.5 px-2.5 py-1 rounded-lg badge-navy-gradient font-semibold text-[#0e0447]">
-                      <CalendarCheck className="w-3.5 h-3.5 text-[#0e0447]" />
+                    <div className="inline-flex items-center space-x-1.5 mt-0.5 px-2.5 py-1 rounded-lg badge-primary-soft font-semibold">
+                      <CalendarCheck className="w-3.5 h-3.5 text-[#0088D9]" />
                       <span>Instructor Request from {req.supplyingDept}</span>
                     </div>
                     <p className="text-[11px] text-slate-500 mt-1">
@@ -470,7 +470,7 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
 
                   <div>
                     <span className="text-slate-400 block mb-0.5 font-medium">Department Notes:</span>
-                    <p className="text-slate-600 italic bg-[#f8f9fa] p-2 rounded-xl border border-slate-200/80">
+                    <p className="text-slate-600 italic bg-[#f4f6f9] p-2 rounded-xl border border-slate-200/80">
                       "{req.remarks || 'No additional remarks'}"
                     </p>
                   </div>
@@ -478,23 +478,23 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
 
                 {/* Offer Details & Provided Conflict-Free Available Time Slots */}
                 {req.currentOffer && (
-                  <div className="card-edge-subtle mt-2 p-3.5 rounded-xl bg-gradient-to-r from-[#0e0447]/6 via-[#f8f9fb] to-[#f5f5f7] border border-[#0e0447]/20 space-y-2.5 text-xs">
+                  <div className="card-edge-subtle mt-2 p-3.5 rounded-xl bg-[#f4f6f9] border border-[#3C8DBC]/25 space-y-2.5 text-xs">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                       <div className="flex items-center space-x-2">
-                        <ShieldCheck className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                        <ShieldCheck className="w-4 h-4 text-[#00A65A] flex-shrink-0" />
                         <div>
                           <span className="text-slate-600">Provided Instructor: </span>
                           <strong className="text-slate-900 font-bold">
                             {req.currentOffer.instructorName}
                           </strong>{' '}
-                          <span className="text-[#0e0447] font-semibold">
+                          <span className="text-[#0088D9] font-semibold">
                             ({req.currentOffer.offeredHours} hrs weekly workload allocated)
                           </span>
                         </div>
                       </div>
 
                       <div className="flex items-center space-x-2 text-[11px] text-slate-500">
-                        <span className="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold">
+                        <span className="px-2 py-0.5 rounded-md badge-success-soft font-semibold">
                           {req.currentOffer.availableSlots.length} conflict-free slots granted
                         </span>
                       </div>
@@ -515,7 +515,7 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
                               key={d.index}
                               className="bg-white border border-slate-200/80 rounded-lg px-2 py-1.5 text-[11px]"
                             >
-                              <span className="font-bold text-[#0e0447] block">{d.short}</span>
+                              <span className="font-bold text-[#0088D9] block">{d.short}</span>
                               <span className="text-slate-600 font-mono text-[10px] leading-tight block">
                                 {summarizeDaySlots(daySlots)}
                               </span>
@@ -533,7 +533,7 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
                     (req.status === 'SUBMITTED' || req.status === 'UNDER_REVIEW') && (
                       <button
                         onClick={() => handleOpenOfferModal(req)}
-                        className="btn-navy-gradient px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all shadow-xs flex items-center space-x-1.5 cursor-pointer"
+                        className="btn-primary-gradient px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all shadow-xs flex items-center space-x-1.5 cursor-pointer"
                       >
                         <Send className="w-3.5 h-3.5" />
                         <span>Provide Instructor & Available Hours</span>
@@ -544,13 +544,13 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
                     <>
                       <button
                         onClick={() => onRejectOffer(req.id)}
-                        className="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-rose-50 text-slate-700 hover:text-rose-700 border border-slate-200 hover:border-rose-300 transition-all cursor-pointer"
+                        className="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-[#D2D6DE]/50 hover:bg-rose-50 text-slate-700 hover:text-rose-700 border border-slate-200 hover:border-rose-300 transition-all cursor-pointer"
                       >
                         Decline
                       </button>
                       <button
                         onClick={() => onAcceptOffer(req.id)}
-                        className="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white transition-all shadow-xs flex items-center space-x-1.5 cursor-pointer"
+                        className="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-[#00A65A] hover:bg-[#008f4d] text-white transition-all shadow-xs flex items-center space-x-1.5 cursor-pointer"
                       >
                         <CheckCircle2 className="w-3.5 h-3.5" />
                         <span>Accept Instructor & Available Hours</span>
@@ -570,8 +570,8 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
           <div className="card-edge-gradient bg-white border border-slate-200 rounded-2xl max-w-lg w-full p-6 shadow-2xl my-8">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div className="flex items-center space-x-2">
-                <div className="p-2 rounded-xl badge-navy-gradient text-[#0e0447]">
-                  <GitPullRequest className="w-5 h-5 text-[#0e0447]" />
+                <div className="p-2 rounded-xl badge-primary-soft">
+                  <GitPullRequest className="w-5 h-5 text-[#0088D9]" />
                 </div>
                 <div>
                   <h3 className="font-bold text-base text-slate-900">
@@ -597,15 +597,15 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
                     Requesting Department:
                   </label>
                   {currentDept !== 'ALL' ? (
-                    <div className="p-2.5 rounded-xl badge-navy-gradient font-bold text-[#0e0447] flex items-center justify-between">
+                    <div className="p-2.5 rounded-xl badge-primary-soft font-bold flex items-center justify-between">
                       <span>{currentDept} (Scope Locked)</span>
-                      <Lock className="w-3.5 h-3.5 text-[#0e0447]" />
+                      <Lock className="w-3.5 h-3.5 text-[#0088D9]" />
                     </div>
                   ) : (
                     <select
                       value={reqDept}
                       onChange={(e) => setReqDept(e.target.value)}
-                      className="w-full bg-[#f8f9fa] border border-slate-200 rounded-xl p-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0e0447]/30 font-semibold"
+                      className="w-full bg-[#f4f6f9] border border-slate-200 rounded-xl p-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0088D9]/35 font-semibold"
                     >
                       {departments.map((d) => (
                         <option key={d.code} value={d.code}>
@@ -623,7 +623,7 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
                   <select
                     value={supDept}
                     onChange={(e) => setSupDept(e.target.value)}
-                    className="w-full bg-[#f8f9fa] border border-slate-200 rounded-xl p-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0e0447]/30 font-bold text-[#0e0447]"
+                    className="w-full bg-[#f4f6f9] border border-slate-200 rounded-xl p-2 text-[#0088D9] focus:outline-none focus:ring-2 focus:ring-[#0088D9]/35 font-bold"
                   >
                     {departments
                       .filter((d) => d.code !== effectiveRequestingDept)
@@ -644,7 +644,7 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
                 <select
                   value={selectedCourseId}
                   onChange={(e) => handlePickExistingCourse(e.target.value)}
-                  className="w-full bg-[#f8f9fa] border border-slate-200 rounded-xl p-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0e0447]/30 font-medium"
+                  className="w-full bg-[#f4f6f9] border border-slate-200 rounded-xl p-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0088D9]/35 font-medium"
                 >
                   <option value="">— Custom / Enter course details below —</option>
                   {deptCourses.map((c) => (
@@ -664,7 +664,7 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
                     placeholder="e.g. MATH-201"
                     value={courseCode}
                     onChange={(e) => setCourseCode(e.target.value)}
-                    className="w-full bg-[#f8f9fa] border border-slate-200 rounded-xl p-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0e0447]/30 font-mono font-bold"
+                    className="w-full bg-[#f4f6f9] border border-slate-200 rounded-xl p-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0088D9]/35 font-mono font-bold"
                   />
                 </div>
 
@@ -676,7 +676,7 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
                     placeholder="e.g. Discrete Math"
                     value={courseTitle}
                     onChange={(e) => setCourseTitle(e.target.value)}
-                    className="w-full bg-[#f8f9fa] border border-slate-200 rounded-xl p-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0e0447]/30"
+                    className="w-full bg-[#f4f6f9] border border-slate-200 rounded-xl p-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0088D9]/35"
                   />
                 </div>
 
@@ -688,7 +688,7 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
                     placeholder="e.g. CS-Year 2 Sec A"
                     value={sectionName}
                     onChange={(e) => setSectionName(e.target.value)}
-                    className="w-full bg-[#f8f9fa] border border-slate-200 rounded-xl p-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0e0447]/30"
+                    className="w-full bg-[#f4f6f9] border border-slate-200 rounded-xl p-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0088D9]/35"
                   />
                 </div>
               </div>
@@ -702,7 +702,7 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
                   value={remarks}
                   onChange={(e) => setRemarks(e.target.value)}
                   placeholder="e.g. Requesting an instructor for CS Year 2 Section A."
-                  className="w-full bg-[#f8f9fa] border border-slate-200 rounded-xl p-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0e0447]/30"
+                  className="w-full bg-[#f4f6f9] border border-slate-200 rounded-xl p-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0088D9]/35"
                 />
               </div>
 
@@ -715,13 +715,13 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
                   <button
                     type="button"
                     onClick={() => setIsCreateModalOpen(false)}
-                    className="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-all cursor-pointer"
+                    className="px-4 py-2 rounded-xl text-xs font-semibold bg-[#D2D6DE]/60 hover:bg-[#D2D6DE] text-slate-700 transition-all cursor-pointer"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="btn-navy-gradient px-4 py-2 rounded-xl text-xs font-bold shadow-xs transition-all flex items-center space-x-1.5 cursor-pointer"
+                    className="btn-primary-gradient px-4 py-2 rounded-xl text-xs font-bold shadow-xs transition-all flex items-center space-x-1.5 cursor-pointer"
                   >
                     <Send className="w-3.5 h-3.5" />
                     <span>Ask {supDept} for Instructor</span>
@@ -764,7 +764,7 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
                   <select
                     value={selectedInstructorId}
                     onChange={(e) => handleInstructorChange(e.target.value)}
-                    className="w-full bg-[#f8f9fa] border border-slate-200 rounded-xl p-2.5 text-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-[#0e0447]/30"
+                    className="w-full bg-[#f4f6f9] border border-slate-200 rounded-xl p-2.5 text-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-[#0088D9]/35"
                   >
                     {instructors
                       .filter((i) => i.departmentCode === activeOfferModalReq.supplyingDept)
@@ -790,13 +790,13 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
                     max={Math.max(0.5, remainingCap)}
                     value={offeredHours}
                     onChange={(e) => setOfferedHours(parseFloat(e.target.value) || 0)}
-                    className="w-full bg-[#f8f9fa] border border-slate-200 rounded-xl p-2.5 text-slate-900 font-bold text-[#0e0447] focus:outline-none focus:ring-2 focus:ring-[#0e0447]/30"
+                    className="w-full bg-[#f4f6f9] border border-slate-200 rounded-xl p-2.5 text-[#0088D9] font-bold focus:outline-none focus:ring-2 focus:ring-[#0088D9]/35"
                   />
                 </div>
               </div>
 
               {/* Interactive Weekly Availability Picker excluding Supplying Dept busy slots */}
-              <div className="bg-[#f8f9fa] border border-slate-200 rounded-xl p-3.5">
+              <div className="bg-[#f4f6f9] border border-slate-200 rounded-xl p-3.5">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2.5">
                   <div>
                     <span className="font-bold text-slate-800 block">
@@ -810,7 +810,7 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
                     <button
                       type="button"
                       onClick={() => setSelectedSlotKeys(computeFreeSlotKeys(selectedInstructorId))}
-                      className="px-2 py-1 rounded-lg bg-white border border-slate-200 text-[11px] font-semibold text-[#0e0447] hover:bg-slate-50 cursor-pointer"
+                      className="px-2 py-1 rounded-lg bg-white border border-slate-200 text-[11px] font-semibold text-[#0088D9] hover:bg-slate-50 cursor-pointer"
                     >
                       Select All Free
                     </button>
@@ -862,8 +862,8 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
                                     onClick={() => handleToggleSlot(d.index, sl.slot)}
                                     className={`w-full px-1.5 py-1 rounded font-semibold border transition-all cursor-pointer ${
                                       isSelected
-                                        ? 'bg-emerald-50 text-emerald-800 border-emerald-300 shadow-2xs'
-                                        : 'bg-white text-slate-400 border-slate-200 hover:border-[#0e0447]/30'
+                                        ? 'badge-success-soft shadow-2xs font-bold'
+                                        : 'bg-white text-slate-400 border-slate-200 hover:border-[#0088D9]/40'
                                     }`}
                                   >
                                     {isSelected ? '✓ Free' : 'Off'}
@@ -885,7 +885,7 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
                   </span>
                   <span>
                     Shared Available Windows:{' '}
-                    <strong className="text-emerald-700">{selectedSlotKeys.size} slots</strong>
+                    <strong className="text-[#00A65A]">{selectedSlotKeys.size} slots</strong>
                   </span>
                 </div>
               </div>
@@ -910,14 +910,14 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
             <div className="mt-6 flex items-center justify-end space-x-3">
               <button
                 onClick={() => setActiveOfferModalReq(null)}
-                className="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-all cursor-pointer"
+                className="px-4 py-2 rounded-xl text-xs font-semibold bg-[#D2D6DE]/60 hover:bg-[#D2D6DE] text-slate-700 transition-all cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 disabled={isOverCapacity || offeredHours <= 0 || selectedSlotKeys.size === 0}
                 onClick={handleSubmitOffer}
-                className="btn-navy-gradient px-4 py-2 rounded-xl text-xs font-bold disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-xs cursor-pointer"
+                className="btn-primary-gradient px-4 py-2 rounded-xl text-xs font-bold disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-xs cursor-pointer"
               >
                 Lock Hours & Provide Instructor
               </button>

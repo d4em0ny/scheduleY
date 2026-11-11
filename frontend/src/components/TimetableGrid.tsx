@@ -110,35 +110,35 @@ export const TimetableGrid: React.FC<TimetableGridProps> = ({
     switch (type) {
       case 'COMPUTER_LAB':
         return {
-          wrapper: 'card-edge-subtle bg-white border border-emerald-200/90 text-slate-900 hover:border-emerald-400',
-          badge: 'bg-emerald-50 text-emerald-800 border border-emerald-200',
-          dot: 'bg-emerald-500',
+          wrapper: 'card-edge-subtle bg-white border border-[#00A65A]/30 text-slate-800 hover:border-[#00A65A]',
+          badge: 'badge-success-soft',
+          dot: 'bg-[#00A65A]',
           label: 'Lab',
-          borderDivider: 'border-emerald-100',
+          borderDivider: 'border-[#00A65A]/15',
         };
       case 'SCIENCE_LAB':
         return {
-          wrapper: 'card-edge-subtle bg-white border border-teal-200/90 text-slate-900 hover:border-teal-400',
-          badge: 'bg-teal-50 text-teal-800 border border-teal-200',
-          dot: 'bg-teal-500',
+          wrapper: 'card-edge-subtle bg-white border border-[#00C0EF]/40 text-slate-800 hover:border-[#00C0EF]',
+          badge: 'bg-[#00C0EF]/12 text-[#0073B7] border border-[#00C0EF]/40',
+          dot: 'bg-[#00C0EF]',
           label: 'Sci Lab',
-          borderDivider: 'border-teal-100',
+          borderDivider: 'border-[#00C0EF]/20',
         };
       case 'SEMINAR_ROOM':
         return {
-          wrapper: 'card-edge-subtle bg-white border border-amber-200/90 text-slate-900 hover:border-amber-400',
-          badge: 'bg-amber-50 text-amber-800 border border-amber-200',
-          dot: 'bg-amber-500',
+          wrapper: 'card-edge-subtle bg-white border border-[#3C8DBC]/35 text-slate-800 hover:border-[#3C8DBC]',
+          badge: 'badge-primary-soft',
+          dot: 'bg-[#3C8DBC]',
           label: 'Seminar',
-          borderDivider: 'border-amber-100',
+          borderDivider: 'border-[#3C8DBC]/20',
         };
       default:
         return {
-          wrapper: 'card-edge-subtle bg-white border border-[#0e0447]/20 text-slate-900 hover:border-[#0e0447]/50',
-          badge: 'badge-navy-gradient',
-          dot: 'bg-[#0e0447]',
+          wrapper: 'card-edge-subtle bg-white border border-[#0088D9]/25 text-slate-800 hover:border-[#0088D9]',
+          badge: 'badge-primary-soft',
+          dot: 'bg-[#0088D9]',
           label: 'Lecture',
-          borderDivider: 'border-[#0e0447]/15',
+          borderDivider: 'border-[#0088D9]/15',
         };
     }
   };
@@ -149,13 +149,13 @@ export const TimetableGrid: React.FC<TimetableGridProps> = ({
       <div className="card-edge-gradient bg-white border border-slate-200/90 rounded-2xl p-4 shadow-xs flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
         <div className="flex flex-wrap items-center gap-3">
           {/* Mode Switcher */}
-          <div className="flex p-1 bg-[#f5f5f7] rounded-xl border border-slate-200 text-xs">
+          <div className="flex p-1 bg-[#D2D6DE]/40 rounded-xl border border-slate-200 text-xs">
             <button
               onClick={() => setFilterMode('section')}
               className={`px-3 py-1.5 rounded-lg font-semibold transition-all cursor-pointer ${
                 filterMode === 'section'
-                  ? 'tab-navy-active'
-                  : 'text-slate-600 hover:text-[#0e0447]'
+                  ? 'tab-primary-active'
+                  : 'text-slate-600 hover:text-[#0088D9]'
               }`}
             >
               By Student Section
@@ -164,8 +164,8 @@ export const TimetableGrid: React.FC<TimetableGridProps> = ({
               onClick={() => setFilterMode('instructor')}
               className={`px-3 py-1.5 rounded-lg font-semibold transition-all cursor-pointer ${
                 filterMode === 'instructor'
-                  ? 'tab-navy-active'
-                  : 'text-slate-600 hover:text-[#0e0447]'
+                  ? 'tab-primary-active'
+                  : 'text-slate-600 hover:text-[#0088D9]'
               }`}
             >
               By Faculty Member
@@ -177,7 +177,7 @@ export const TimetableGrid: React.FC<TimetableGridProps> = ({
             <select
               value={selectedSection}
               onChange={(e) => setSelectedSection(e.target.value)}
-              className="bg-[#f8f9fa] border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#0e0447]/30 cursor-pointer"
+              className="bg-[#f4f6f9] border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#0088D9]/35 cursor-pointer"
             >
               {scopedSections.map((sec) => (
                 <option key={sec.id} value={sec.sectionName}>
@@ -189,7 +189,7 @@ export const TimetableGrid: React.FC<TimetableGridProps> = ({
             <select
               value={selectedInstructorId}
               onChange={(e) => setSelectedInstructorId(e.target.value)}
-              className="bg-[#f8f9fa] border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#0e0447]/30 cursor-pointer"
+              className="bg-[#f4f6f9] border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#0088D9]/35 cursor-pointer"
             >
               {scopedInstructors.map((inst) => (
                 <option key={inst.id} value={inst.id}>
@@ -206,7 +206,7 @@ export const TimetableGrid: React.FC<TimetableGridProps> = ({
             <button
               onClick={onGenerateSchedule}
               disabled={isGenerating}
-              className="btn-navy-gradient w-full sm:w-auto flex items-center justify-center space-x-2 px-5 py-2.5 rounded-xl text-xs font-bold shadow-md cursor-pointer disabled:opacity-50"
+              className="btn-primary-gradient w-full sm:w-auto flex items-center justify-center space-x-2 px-5 py-2.5 rounded-xl text-xs font-bold shadow-xs cursor-pointer disabled:opacity-50"
             >
               <Zap className={`w-4 h-4 ${isGenerating ? 'animate-spin' : ''}`} />
               <span>{isGenerating ? 'Solving Schedule Constraints...' : '⚡ Generate Schedule'}</span>
@@ -217,15 +217,15 @@ export const TimetableGrid: React.FC<TimetableGridProps> = ({
 
       {/* Solver Metrics Banner */}
       {generationMetrics && (
-        <div className="card-edge-subtle bg-gradient-to-r from-emerald-50/70 via-white to-[#f5f5f7] border border-emerald-200/80 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs shadow-xs animate-in fade-in duration-200">
+        <div className="card-edge-subtle bg-white border border-[#00A65A]/40 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs shadow-xs animate-in fade-in duration-200">
           <div className="flex items-center space-x-2.5">
-            <div className="p-2 rounded-xl bg-emerald-100 text-emerald-700">
+            <div className="p-2 rounded-xl bg-[#00A65A]/12 text-[#00A65A]">
               <CheckCircle2 className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center space-x-2">
                 <span className="font-bold text-slate-900">Constraint Solver Complete</span>
-                <span className="px-2 py-0.2 rounded-full font-mono text-[10px] font-bold bg-emerald-100 text-emerald-800">
+                <span className="px-2 py-0.2 rounded-full font-mono text-[10px] font-bold badge-success-soft">
                   {generationMetrics.solverStatus}
                 </span>
               </div>
@@ -236,17 +236,17 @@ export const TimetableGrid: React.FC<TimetableGridProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center space-x-3 text-[11px] text-slate-600 bg-white/80 px-3 py-1.5 rounded-lg border border-slate-200/80">
+          <div className="flex items-center space-x-3 text-[11px] text-slate-600 bg-[#f4f6f9] px-3 py-1.5 rounded-lg border border-slate-200/80">
             <div>
               Satisfaction:{' '}
-              <strong className="text-emerald-700 font-bold">
+              <strong className="text-[#00A65A] font-bold">
                 {(generationMetrics.satisfaction * 100).toFixed(1)}%
               </strong>
             </div>
             <span>•</span>
             <div>
               Hard Conflicts:{' '}
-              <strong className="text-emerald-700 font-bold">
+              <strong className="text-[#00A65A] font-bold">
                 {generationMetrics.hardConflicts}
               </strong>
             </div>
@@ -255,17 +255,17 @@ export const TimetableGrid: React.FC<TimetableGridProps> = ({
       )}
 
       {/* Context Badge */}
-      <div className="flex items-center justify-between text-xs text-slate-600 px-1">
+      <div className="flex items-center justify-between text-xs text-slate-700 px-1">
         {filterMode === 'section' && activeSectionObj && (
           <div className="card-edge-subtle flex items-center space-x-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-xs">
-            <MapPin className="w-3.5 h-3.5 text-[#0e0447]" />
+            <MapPin className="w-3.5 h-3.5 text-[#0088D9]" />
             <span>
               Fixed Permanent Classroom:{' '}
               <strong className="text-slate-900">
                 {activeSectionObj.assignedBuilding} {activeSectionObj.assignedRoomNumber}
               </strong>
             </span>
-            <span className="text-[10px] badge-navy-gradient px-2 py-0.5 rounded-full font-semibold">
+            <span className="text-[10px] badge-primary-soft px-2 py-0.5 rounded-full font-semibold">
               Permanent Invariant
             </span>
           </div>
@@ -273,7 +273,7 @@ export const TimetableGrid: React.FC<TimetableGridProps> = ({
 
         {filterMode === 'instructor' && activeInstructorObj && (
           <div className="card-edge-subtle flex items-center space-x-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-xs">
-            <User className="w-3.5 h-3.5 text-[#0e0447]" />
+            <User className="w-3.5 h-3.5 text-[#0088D9]" />
             <span>
               Assigned Load:{' '}
               <strong className="text-slate-900">
@@ -283,7 +283,7 @@ export const TimetableGrid: React.FC<TimetableGridProps> = ({
           </div>
         )}
 
-        <div className="text-[11px] text-slate-500 hidden sm:block">
+        <div className="text-[11px] font-semibold text-slate-600 hidden sm:block bg-white/70 px-2.5 py-1 rounded-lg border border-slate-200/70">
           Fall Semester 2026 Academic Term
         </div>
       </div>
@@ -293,10 +293,10 @@ export const TimetableGrid: React.FC<TimetableGridProps> = ({
         <div className="overflow-x-auto">
           <table className="w-full border-collapse text-left">
             <thead>
-              <tr className="border-b border-slate-200 bg-[#f5f5f7]">
-                <th className="py-3 px-3 text-[11px] font-bold text-slate-500 uppercase tracking-wider border-r border-slate-200 w-28 text-center">
+              <tr className="border-b border-slate-200 bg-[#f4f6f9]">
+                <th className="py-3 px-3 text-[11px] font-bold text-slate-600 uppercase tracking-wider border-r border-slate-200 w-28 text-center">
                   <div className="flex items-center justify-center space-x-1">
-                    <Clock className="w-3.5 h-3.5 text-[#0e0447]" />
+                    <Clock className="w-3.5 h-3.5 text-[#0088D9]" />
                     <span>Time Slot</span>
                   </div>
                 </th>
@@ -313,9 +313,9 @@ export const TimetableGrid: React.FC<TimetableGridProps> = ({
             <tbody className="divide-y divide-slate-200">
               {PERIODS.map((period) => (
                 <Fragment key={period.slot}>
-                  <tr className="hover:bg-slate-50/40 transition-colors">
+                  <tr className="hover:bg-[#f4f6f9]/60 transition-colors">
                     {/* Period Slot Label */}
-                    <td className="py-3 px-3 border-r border-slate-200 bg-[#f8f9fb] text-xs">
+                    <td className="py-3 px-3 border-r border-slate-200 bg-[#f8fafc] text-xs">
                       <div className="font-bold text-slate-800 text-center">Slot {period.slot}</div>
                       <div className="text-[11px] text-slate-500 font-mono text-center whitespace-nowrap">
                         {period.time}
@@ -361,7 +361,7 @@ export const TimetableGrid: React.FC<TimetableGridProps> = ({
                               {/* Course Code & Component Pill */}
                               <div>
                                 <div className="flex items-center justify-between gap-1 mb-1">
-                                  <span className="font-mono font-bold text-xs text-[#0e0447] tracking-tight">
+                                  <span className="font-mono font-bold text-xs text-[#0088D9] tracking-tight">
                                     {sessionInSlot.courseCode}
                                   </span>
                                   <span
@@ -379,7 +379,7 @@ export const TimetableGrid: React.FC<TimetableGridProps> = ({
 
                                 {sessionInSlot.slotDuration > 1 && (
                                   <div className="mt-1 inline-flex items-center space-x-1 text-[10px] font-mono font-semibold text-slate-500">
-                                    <Clock className="w-2.5 h-2.5 text-[#0e0447]" />
+                                    <Clock className="w-2.5 h-2.5 text-[#3C8DBC]" />
                                     <span>{getSessionTimeLabel(sessionInSlot.startSlot, effectiveRowSpan)}</span>
                                   </div>
                                 )}
@@ -389,19 +389,19 @@ export const TimetableGrid: React.FC<TimetableGridProps> = ({
                               <div className={`mt-2 pt-1.5 border-t ${style.borderDivider} text-[11px] space-y-1`}>
                                 {/* Lecturer Name */}
                                 <div className="flex items-center space-x-1.5 text-slate-700 font-medium">
-                                  <User className="w-3 h-3 text-[#0e0447] flex-shrink-0" />
+                                  <User className="w-3 h-3 text-[#3C8DBC] flex-shrink-0" />
                                   <span className="truncate">{sessionInSlot.instructorName}</span>
                                 </div>
 
                                 {/* Classroom Number */}
                                 <div className="flex items-center space-x-1.5 text-slate-600">
-                                  <MapPin className="w-3 h-3 text-slate-500 flex-shrink-0" />
+                                  <MapPin className="w-3 h-3 text-[#0088D9] flex-shrink-0" />
                                   <span className="font-bold text-slate-900">{sessionInSlot.roomNumber}</span>
                                 </div>
 
                                 {/* Target Section (shown when filtered by instructor) */}
                                 {filterMode === 'instructor' && (
-                                  <div className="text-[10px] font-semibold text-[#0e0447] bg-white/70 px-1.5 py-0.5 rounded border border-[#0e0447]/20">
+                                  <div className="text-[10px] font-semibold text-[#0073B7] bg-[#f4f6f9] px-1.5 py-0.5 rounded border border-[#3C8DBC]/25">
                                     {sessionInSlot.sectionName}
                                   </div>
                                 )}
@@ -421,10 +421,10 @@ export const TimetableGrid: React.FC<TimetableGridProps> = ({
 
                   {/* Cut-out Midday Break Indicator (12:00 - 14:00 Unassignable) */}
                   {period.slot === 4 && (
-                    <tr className="bg-[#f5f5f7] border-y border-[#0e0447]/20">
+                    <tr className="bg-[#D2D6DE]/40 border-y border-[#3C8DBC]/25">
                       <td colSpan={6} className="py-1.5 px-4 text-center">
-                        <div className="inline-flex items-center space-x-2 text-[10px] font-bold uppercase tracking-wider text-[#0e0447]/70">
-                          <Clock className="w-3 h-3 text-[#0e0447]/60" />
+                        <div className="inline-flex items-center space-x-2 text-[10px] font-bold uppercase tracking-wider text-[#0073B7]">
+                          <Clock className="w-3 h-3 text-[#0088D9]" />
                           <span>12:00 – 14:00 • Break Excluded (No Classes Assigned)</span>
                         </div>
                       </td>
