@@ -113,7 +113,7 @@ async def test_api_full_setup_workflow(db_session: AsyncSession):
         assert wl_data["committed_hours"] == 0.0
         assert wl_data["held_hours"] == 0.0
 
-        # 6. Create Course and Component
+        # 6. Create Course and Components (Lecture + Lab to test midday break boundary)
         course_resp = await client.post(
             "/api/v1/courses",
             json={
@@ -125,11 +125,18 @@ async def test_api_full_setup_workflow(db_session: AsyncSession):
                 "components": [
                     {
                         "component_type": "REGULAR_CLASSROOM",
-                        "weekly_sessions": 2,
+                        "weekly_sessions": 3,
                         "session_duration_slots": 1,
-                        "weekly_contact_hours": 2.0,
-                        "weekly_teaching_credits": 2.0,
-                    }
+                        "weekly_contact_hours": 3.0,
+                        "weekly_teaching_credits": 3.0,
+                    },
+                    {
+                        "component_type": "COMPUTER_LAB",
+                        "weekly_sessions": 8,
+                        "session_duration_slots": 2,
+                        "weekly_contact_hours": 16.0,
+                        "weekly_teaching_credits": 10.0,
+                    },
                 ],
             },
         )
@@ -152,7 +159,13 @@ async def test_api_full_setup_workflow(db_session: AsyncSession):
         assert gen_resp.status_code == 201
         gen_data = gen_resp.json()
         assert gen_data["solver_status"] in ["OPTIMAL", "FEASIBLE"]
-        assert len(gen_data["sessions"]) == 2
-        assert gen_data["sessions"][0]["room_number"] == "Room 301"
+        assert len(gen_data["sessions"]) == 11
+        assert any(s["start_slot"] >= 5 for s in gen_data["sessions"])
+        for s in gen_data["sessions"]:
+            end_slot = s["start_slot"] + s["slot_duration"] - 1
+            assert 1 <= s["start_slot"] and end_slot <= 7
+            # Confirm no session crosses the 12:00-14:00 midday break (slot 4 -> slot 5)
+            assert not (s["start_slot"] <= 4 and end_slot >= 5)
+            assert s["room_number"] == "Room 301"
 
     app.dependency_overrides.clear()

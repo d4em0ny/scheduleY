@@ -74,7 +74,7 @@ export interface ScheduledSession {
   instructorId: string;
   roomNumber: string;
   dayOfWeek: number; // 1 = Mon, 5 = Fri
-  startSlot: number; // 1 to 8
+  startSlot: number; // 1 to 7 (Slots 1-4: 08:00-12:00, Slots 5-7: 14:00-17:00)
   slotDuration: number;
 }
 

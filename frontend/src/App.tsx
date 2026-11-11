@@ -114,9 +114,18 @@ export function App() {
               (courseDayTracker[`${crs.courseCode}-${d2}`] || 0)
           );
 
+          // Slots 1..4: Morning (08:00 - 12:00)
+          // 12:00 - 14:00: Forbidden midday break (cut from grid)
+          // Slots 5..7: Afternoon (14:00 - 17:00)
+          const totalSlots = 7;
           for (const d of dayCandidates) {
-            const maxStart = 8 - duration + 1;
+            const maxStart = totalSlots - duration + 1;
             for (let s = 1; s <= maxStart; s++) {
+              const endSlot = s + duration - 1;
+              // Never allow a multi-slot session to span across the 12:00-14:00 break (slot 4 -> slot 5)
+              if (s <= 4 && endSlot >= 5) {
+                continue;
+              }
               let conflict = false;
 
               for (let offset = 0; offset < duration; offset++) {

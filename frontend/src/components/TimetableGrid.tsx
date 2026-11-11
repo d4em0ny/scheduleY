@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { Fragment, useState, useEffect } from 'react';
 import type { ScheduledSession, StudentSection, Instructor } from '../types';
 import {
   Clock,
@@ -34,16 +34,28 @@ const DAYS = [
   { index: 5, name: 'Friday' },
 ];
 
+// Assignable teaching slots:
+// Morning block: Slots 1-4 (08:00 - 12:00)
+// Excluded window: 12:00 - 14:00 (Cut from time grid; unassignable break)
+// Afternoon block: Slots 5-7 (14:00 - 17:00)
 const PERIODS = [
-  { slot: 1, time: '08:30 - 09:25' },
-  { slot: 2, time: '09:30 - 10:25' },
-  { slot: 3, time: '10:35 - 11:30' },
-  { slot: 4, time: '11:35 - 12:30' },
-  { slot: 5, time: '12:35 - 13:30' },
-  { slot: 6, time: '13:35 - 14:30' },
-  { slot: 7, time: '14:35 - 15:30' },
-  { slot: 8, time: '15:35 - 16:30' },
+  { slot: 1, time: '08:00 - 09:00', start: '08:00', end: '09:00' },
+  { slot: 2, time: '09:00 - 10:00', start: '09:00', end: '10:00' },
+  { slot: 3, time: '10:00 - 11:00', start: '10:00', end: '11:00' },
+  { slot: 4, time: '11:00 - 12:00', start: '11:00', end: '12:00' },
+  { slot: 5, time: '14:00 - 15:00', start: '14:00', end: '15:00' },
+  { slot: 6, time: '15:00 - 16:00', start: '15:00', end: '16:00' },
+  { slot: 7, time: '16:00 - 17:00', start: '16:00', end: '17:00' },
 ];
+
+function getSessionTimeLabel(startSlot: number, duration: number): string {
+  const startP = PERIODS.find((p) => p.slot === startSlot);
+  const maxBlockSlot = startSlot <= 4 ? 4 : 7;
+  const endSlot = Math.min(startSlot + duration - 1, maxBlockSlot);
+  const endP = PERIODS.find((p) => p.slot === endSlot);
+  if (!startP || !endP) return '';
+  return `${startP.start} - ${endP.end}`;
+}
 
 export const TimetableGrid: React.FC<TimetableGridProps> = ({
   sessions,
@@ -300,89 +312,125 @@ export const TimetableGrid: React.FC<TimetableGridProps> = ({
             </thead>
             <tbody className="divide-y divide-slate-200">
               {PERIODS.map((period) => (
-                <tr key={period.slot} className="hover:bg-slate-50/40 transition-colors">
-                  {/* Period Slot Label */}
-                  <td className="py-3 px-3 border-r border-slate-200 bg-[#f8f9fb] text-xs">
-                    <div className="font-bold text-slate-800 text-center">Slot {period.slot}</div>
-                    <div className="text-[11px] text-slate-500 font-mono text-center">
-                      {period.time}
-                    </div>
-                  </td>
+                <Fragment key={period.slot}>
+                  <tr className="hover:bg-slate-50/40 transition-colors">
+                    {/* Period Slot Label */}
+                    <td className="py-3 px-3 border-r border-slate-200 bg-[#f8f9fb] text-xs">
+                      <div className="font-bold text-slate-800 text-center">Slot {period.slot}</div>
+                      <div className="text-[11px] text-slate-500 font-mono text-center whitespace-nowrap">
+                        {period.time}
+                      </div>
+                    </td>
 
-                  {/* Day Columns */}
-                  {DAYS.map((day) => {
-                    const sessionInSlot = filteredSessions.find(
-                      (s) =>
-                        s.dayOfWeek === day.index &&
-                        period.slot >= s.startSlot &&
-                        period.slot < s.startSlot + s.slotDuration
-                    );
+                    {/* Day Columns */}
+                    {DAYS.map((day) => {
+                      const sessionInSlot = filteredSessions.find(
+                        (s) =>
+                          s.dayOfWeek === day.index &&
+                          period.slot >= s.startSlot &&
+                          period.slot < s.startSlot + s.slotDuration
+                      );
 
-                    const isSessionStart = sessionInSlot && sessionInSlot.startSlot === period.slot;
-                    const style = sessionInSlot ? getComponentCardStyle(sessionInSlot.componentType) : null;
+                      const isSessionStart = sessionInSlot && sessionInSlot.startSlot === period.slot;
+                      if (sessionInSlot && !isSessionStart) {
+                        const maxBlockEnd = sessionInSlot.startSlot <= 4 ? 4 : 7;
+                        if (period.slot <= maxBlockEnd) {
+                          return null; // Spanned by starting slot cell's rowSpan
+                        }
+                      }
 
-                    return (
-                      <td
-                        key={day.index}
-                        className="p-1.5 border-r border-slate-200 last:border-r-0 align-top min-h-[110px]"
-                      >
-                        {isSessionStart && sessionInSlot && style && (
-                          <div
-                            className={`p-2.5 rounded-xl border shadow-xs transition-all flex flex-col justify-between ${style.wrapper}`}
-                          >
-                            {/* Course Code & Component Pill */}
-                            <div>
-                              <div className="flex items-center justify-between gap-1 mb-1">
-                                <span className="font-mono font-bold text-xs text-[#0e0447] tracking-tight">
-                                  {sessionInSlot.courseCode}
-                                </span>
-                                <span
-                                  className={`text-[10px] font-bold px-1.5 py-0.2 rounded-md border flex items-center space-x-1 ${style.badge}`}
-                                >
-                                  <span className={`w-1.5 h-1.5 rounded-full ${style.dot}`} />
-                                  <span>{style.label}</span>
-                                </span>
-                              </div>
+                      const maxBlockEnd = sessionInSlot ? (sessionInSlot.startSlot <= 4 ? 4 : 7) : 7;
+                      const effectiveRowSpan = sessionInSlot
+                        ? Math.min(sessionInSlot.slotDuration, maxBlockEnd - sessionInSlot.startSlot + 1)
+                        : 1;
 
-                              {/* Course Name */}
-                              <h4 className="text-xs font-semibold text-slate-800 line-clamp-2 leading-snug">
-                                {sessionInSlot.courseTitle}
-                              </h4>
-                            </div>
+                      const style = sessionInSlot ? getComponentCardStyle(sessionInSlot.componentType) : null;
 
-                            {/* Lecturer & Classroom - Grouped Together */}
-                            <div className={`mt-2 pt-1.5 border-t ${style.borderDivider} text-[11px] space-y-1`}>
-                              {/* Lecturer Name */}
-                              <div className="flex items-center space-x-1.5 text-slate-700 font-medium">
-                                <User className="w-3 h-3 text-[#0e0447] flex-shrink-0" />
-                                <span className="truncate">{sessionInSlot.instructorName}</span>
-                              </div>
-
-                              {/* Classroom Number */}
-                              <div className="flex items-center space-x-1.5 text-slate-600">
-                                <MapPin className="w-3 h-3 text-slate-500 flex-shrink-0" />
-                                <span className="font-bold text-slate-900">{sessionInSlot.roomNumber}</span>
-                              </div>
-
-                              {/* Target Section (shown when filtered by instructor) */}
-                              {filterMode === 'instructor' && (
-                                <div className="text-[10px] font-semibold text-[#0e0447] bg-white/70 px-1.5 py-0.5 rounded border border-[#0e0447]/20">
-                                  {sessionInSlot.sectionName}
+                      return (
+                        <td
+                          key={day.index}
+                          rowSpan={isSessionStart && effectiveRowSpan > 1 ? effectiveRowSpan : undefined}
+                          className="p-1.5 border-r border-slate-200 last:border-r-0 align-top min-h-[110px]"
+                        >
+                          {isSessionStart && sessionInSlot && style && (
+                            <div
+                              className={`p-2.5 rounded-xl border shadow-xs transition-all flex flex-col justify-between h-full ${
+                                effectiveRowSpan > 1 ? 'min-h-[210px]' : 'min-h-[96px]'
+                              } ${style.wrapper}`}
+                            >
+                              {/* Course Code & Component Pill */}
+                              <div>
+                                <div className="flex items-center justify-between gap-1 mb-1">
+                                  <span className="font-mono font-bold text-xs text-[#0e0447] tracking-tight">
+                                    {sessionInSlot.courseCode}
+                                  </span>
+                                  <span
+                                    className={`text-[10px] font-bold px-1.5 py-0.2 rounded-md border flex items-center space-x-1 ${style.badge}`}
+                                  >
+                                    <span className={`w-1.5 h-1.5 rounded-full ${style.dot}`} />
+                                    <span>{style.label}</span>
+                                  </span>
                                 </div>
-                              )}
-                            </div>
-                          </div>
-                        )}
 
-                        {!sessionInSlot && (
-                          <div className="w-full h-full min-h-[90px] flex items-center justify-center text-slate-300 text-xs font-mono select-none">
-                            —
-                          </div>
-                        )}
+                                {/* Course Name */}
+                                <h4 className="text-xs font-semibold text-slate-800 line-clamp-2 leading-snug">
+                                  {sessionInSlot.courseTitle}
+                                </h4>
+
+                                {sessionInSlot.slotDuration > 1 && (
+                                  <div className="mt-1 inline-flex items-center space-x-1 text-[10px] font-mono font-semibold text-slate-500">
+                                    <Clock className="w-2.5 h-2.5 text-[#0e0447]" />
+                                    <span>{getSessionTimeLabel(sessionInSlot.startSlot, effectiveRowSpan)}</span>
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* Lecturer & Classroom - Grouped Together */}
+                              <div className={`mt-2 pt-1.5 border-t ${style.borderDivider} text-[11px] space-y-1`}>
+                                {/* Lecturer Name */}
+                                <div className="flex items-center space-x-1.5 text-slate-700 font-medium">
+                                  <User className="w-3 h-3 text-[#0e0447] flex-shrink-0" />
+                                  <span className="truncate">{sessionInSlot.instructorName}</span>
+                                </div>
+
+                                {/* Classroom Number */}
+                                <div className="flex items-center space-x-1.5 text-slate-600">
+                                  <MapPin className="w-3 h-3 text-slate-500 flex-shrink-0" />
+                                  <span className="font-bold text-slate-900">{sessionInSlot.roomNumber}</span>
+                                </div>
+
+                                {/* Target Section (shown when filtered by instructor) */}
+                                {filterMode === 'instructor' && (
+                                  <div className="text-[10px] font-semibold text-[#0e0447] bg-white/70 px-1.5 py-0.5 rounded border border-[#0e0447]/20">
+                                    {sessionInSlot.sectionName}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          )}
+
+                          {!sessionInSlot && (
+                            <div className="w-full h-full min-h-[90px] flex items-center justify-center text-slate-300 text-xs font-mono select-none">
+                              —
+                            </div>
+                          )}
+                        </td>
+                      );
+                    })}
+                  </tr>
+
+                  {/* Cut-out Midday Break Indicator (12:00 - 14:00 Unassignable) */}
+                  {period.slot === 4 && (
+                    <tr className="bg-[#f5f5f7] border-y border-[#0e0447]/20">
+                      <td colSpan={6} className="py-1.5 px-4 text-center">
+                        <div className="inline-flex items-center space-x-2 text-[10px] font-bold uppercase tracking-wider text-[#0e0447]/70">
+                          <Clock className="w-3 h-3 text-[#0e0447]/60" />
+                          <span>12:00 – 14:00 • Break Excluded (No Classes Assigned)</span>
+                        </div>
                       </td>
-                    );
-                  })}
-                </tr>
+                    </tr>
+                  )}
+                </Fragment>
               ))}
             </tbody>
           </table>

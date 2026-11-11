@@ -111,7 +111,11 @@ class TimetableService:
 
         # 6. Discrete Constraint Solver
         # Days: 1 to 5 (Mon to Fri)
-        # Slots: 1 to 8 (Periods 1 to 8)
+        # Slots: 1 to 7
+        #   Morning block: Slots 1..4 (08:00 - 12:00)
+        #   12:00 - 14:00 is unassignable (midday break excluded from grid)
+        #   Afternoon block: Slots 5..7 (14:00 - 17:00)
+        total_slots_per_day = 7
         scheduled_slots = []
         # Tracking dictionaries for clash detection: (entity_id, day, slot) -> True
         section_time_grid: Dict[Tuple[uuid.UUID, int, int], bool] = {}
@@ -131,8 +135,13 @@ class TimetableService:
             )
 
             for d in preferred_days:
-                max_start = 8 - req["duration"] + 1
+                max_start = total_slots_per_day - req["duration"] + 1
                 for s in range(1, max_start + 1):
+                    end_slot = s + req["duration"] - 1
+                    # Contiguous multi-slot sessions must not bridge the 12:00-14:00 break (slot 4 -> slot 5)
+                    if s <= 4 and end_slot >= 5:
+                        continue
+
                     # Check feasibility for all slots in the session duration
                     conflict = False
                     for offset in range(req["duration"]):

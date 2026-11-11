@@ -369,7 +369,7 @@ export const INITIAL_SESSIONS: ScheduledSession[] = [
     instructorId: 'inst-2',
     roomNumber: 'ENG-1 Room 101',
     dayOfWeek: 1, // Mon
-    startSlot: 1, // 08:30
+    startSlot: 1, // 08:00 - 09:00
     slotDuration: 1,
   },
   {
@@ -382,7 +382,7 @@ export const INITIAL_SESSIONS: ScheduledSession[] = [
     instructorId: 'inst-2',
     roomNumber: 'ENG-1 Room 101',
     dayOfWeek: 3, // Wed
-    startSlot: 1,
+    startSlot: 1, // 08:00 - 09:00
     slotDuration: 1,
   },
   {
@@ -395,7 +395,7 @@ export const INITIAL_SESSIONS: ScheduledSession[] = [
     instructorId: 'inst-2',
     roomNumber: 'ENG-1 Lab 201',
     dayOfWeek: 4, // Thu
-    startSlot: 5,
+    startSlot: 5, // 14:00 - 16:00 (afternoon block)
     slotDuration: 2,
   },
   {
@@ -408,7 +408,7 @@ export const INITIAL_SESSIONS: ScheduledSession[] = [
     instructorId: 'inst-1',
     roomNumber: 'ENG-1 Room 102',
     dayOfWeek: 2, // Tue
-    startSlot: 2,
+    startSlot: 2, // 09:00 - 11:00
     slotDuration: 2,
   },
   {
@@ -418,10 +418,10 @@ export const INITIAL_SESSIONS: ScheduledSession[] = [
     componentType: 'REGULAR_CLASSROOM',
     sectionName: 'CS-Year 2 Sec A',
     instructorName: 'Dr. Ada Lovelace',
-    instructorId: 'inst-3',
+    instructorId: 'inst-4',
     roomNumber: 'ENG-1 Room 102',
     dayOfWeek: 5, // Fri
-    startSlot: 3,
+    startSlot: 3, // 10:00 - 12:00
     slotDuration: 2,
   },
 ];
