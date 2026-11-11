@@ -13,6 +13,7 @@ import type {
   CourseOfferingItem,
   ScheduledSession,
   ActiveNavTab,
+  TimeSlot,
 } from './types';
 import type { GenerationMetrics } from './components/TimetableGrid';
 import {
@@ -85,8 +86,14 @@ export function App() {
 
       const newSessions: ScheduledSession[] = [];
 
-      // Sort courses by required sessions descending for optimal packing
-      const sortedCourses = [...courses].sort((a, b) => b.weeklySessions - a.weeklySessions);
+      // Schedule active semester courses; internal department courses first, then cross-dept grants
+      const activeSemesterCourses = courses.filter((c) => c.semester === 1);
+      const sortedCourses = [...activeSemesterCourses].sort((a, b) => {
+        const aIsCross = a.allowedInstructorSlots ? 1 : 0;
+        const bIsCross = b.allowedInstructorSlots ? 1 : 0;
+        if (aIsCross !== bIsCross) return aIsCross - bIsCross;
+        return b.weeklySessions - a.weeklySessions;
+      });
 
       for (const crs of sortedCourses) {
         const secObj = SECTIONS.find((s) => s.sectionName === crs.sectionName);
@@ -95,11 +102,12 @@ export function App() {
           crs.componentType === 'COMPUTER_LAB'
             ? 'ENG-1 Lab 201'
             : secObj
-            ? `ENG-1 ${secObj.assignedRoomNumber}`
+            ? `${secObj.assignedBuilding} ${secObj.assignedRoomNumber}`
             : crs.assignedRoomNumber || 'ENG-1 Room 101';
 
-        const instId = crs.assignedInstructorId || instructors[0].id;
-        const instName = crs.assignedInstructorName || instructors[0].name;
+        const deptDefaultInst = instructors.find((i) => i.departmentCode === crs.departmentCode);
+        const instId = crs.assignedInstructorId || deptDefaultInst?.id || instructors[0].id;
+        const instName = crs.assignedInstructorName || deptDefaultInst?.name || instructors[0].name;
         const duration = crs.componentType === 'COMPUTER_LAB' ? 2 : 1;
 
         for (let seq = 1; seq <= crs.weeklySessions; seq++) {
@@ -130,6 +138,17 @@ export function App() {
 
               for (let offset = 0; offset < duration; offset++) {
                 const slot = s + offset;
+
+                // Enforce granted conflict-free slots when taught by a cross-department instructor
+                if (
+                  crs.allowedInstructorSlots &&
+                  crs.allowedInstructorSlots.length > 0 &&
+                  !crs.allowedInstructorSlots.some((as) => as.dayOfWeek === d && as.slot === slot)
+                ) {
+                  conflict = true;
+                  break;
+                }
+
                 const secKey = `${secName}-${d}-${slot}`;
                 const instKey = `${instId}-${d}-${slot}`;
                 const roomKey = `${assignedRoom}-${d}-${slot}`;
@@ -195,57 +214,79 @@ export function App() {
     }, 450);
   };
 
-  // Handle Offer Acceptance
+  // Handle Offer Acceptance: commits held capacity AND binds instructor + conflict-free available slots to course
   const handleAcceptOffer = (requestId: string) => {
-    setRequests((prev) =>
-      prev.map((r) => {
-        if (r.id === requestId && r.currentOffer) {
-          // Release hold on instructor and commit the workload
-          setInstructors((insts) =>
-            insts.map((inst) => {
-              if (inst.id === r.currentOffer?.instructorId) {
-                return {
-                  ...inst,
-                  heldHours: Math.max(0, inst.heldHours - r.currentOffer.offeredHours),
-                  committedHours: inst.committedHours + r.currentOffer.offeredHours,
-                };
-              }
-              return inst;
-            })
-          );
-          return { ...r, status: 'ACCEPTED' };
+    const targetReq = requests.find((r) => r.id === requestId);
+    if (!targetReq || !targetReq.currentOffer) return;
+
+    const offer = targetReq.currentOffer;
+
+    setInstructors((insts) =>
+      insts.map((inst) => {
+        if (inst.id === offer.instructorId) {
+          return {
+            ...inst,
+            heldHours: Math.max(0, inst.heldHours - offer.offeredHours),
+            committedHours: inst.committedHours + offer.offeredHours,
+          };
         }
-        return r;
+        return inst;
       })
+    );
+
+    setCourses((prevCourses) =>
+      prevCourses.map((c) => {
+        const codeMatches = c.courseCode === targetReq.courseCode;
+        const scopeMatches =
+          c.sectionName === targetReq.sectionName || c.departmentCode === targetReq.requestingDept;
+        if (codeMatches && scopeMatches) {
+          return {
+            ...c,
+            assignedInstructorId: offer.instructorId,
+            assignedInstructorName: offer.instructorName,
+            allowedInstructorSlots: offer.availableSlots,
+          };
+        }
+        return c;
+      })
+    );
+
+    setRequests((prev) =>
+      prev.map((r) => (r.id === requestId ? { ...r, status: 'ACCEPTED' } : r))
     );
   };
 
   // Handle Offer Rejection
   const handleRejectOffer = (requestId: string) => {
-    setRequests((prev) =>
-      prev.map((r) => {
-        if (r.id === requestId && r.currentOffer) {
-          // Release hold on instructor back to available capacity
-          setInstructors((insts) =>
-            insts.map((inst) => {
-              if (inst.id === r.currentOffer?.instructorId) {
-                return {
-                  ...inst,
-                  heldHours: Math.max(0, inst.heldHours - r.currentOffer.offeredHours),
-                };
-              }
-              return inst;
-            })
-          );
-          return { ...r, status: 'REJECTED' };
+    const targetReq = requests.find((r) => r.id === requestId);
+    if (!targetReq || !targetReq.currentOffer) return;
+
+    const offer = targetReq.currentOffer;
+
+    setInstructors((insts) =>
+      insts.map((inst) => {
+        if (inst.id === offer.instructorId) {
+          return {
+            ...inst,
+            heldHours: Math.max(0, inst.heldHours - offer.offeredHours),
+          };
         }
-        return r;
+        return inst;
       })
+    );
+
+    setRequests((prev) =>
+      prev.map((r) => (r.id === requestId ? { ...r, status: 'REJECTED' } : r))
     );
   };
 
-  // Handle Supplying Dept Making an Offer
-  const handleMakeOffer = (requestId: string, instructorId: string, hours: number) => {
+  // Handle Supplying Dept Making an Offer (Instructor + Conflict-Free Available Slots)
+  const handleMakeOffer = (
+    requestId: string,
+    instructorId: string,
+    hours: number,
+    availableSlots: TimeSlot[]
+  ) => {
     const targetInst = instructors.find((i) => i.id === instructorId);
     if (!targetInst) return;
 
@@ -259,7 +300,7 @@ export function App() {
       })
     );
 
-    // Update request with offer
+    // Update request with offer & conflict-free available slots
     setRequests((prev) =>
       prev.map((r) => {
         if (r.id === requestId) {
@@ -271,6 +312,7 @@ export function App() {
               instructorId: targetInst.id,
               instructorName: targetInst.name,
               offeredHours: hours,
+              availableSlots,
               expiresAt: '2026-11-12 18:00',
               isActiveHold: true,
             },
@@ -359,6 +401,8 @@ export function App() {
           <CoordinationHub
             requests={requests}
             instructors={instructors}
+            sessions={sessions}
+            courses={courses}
             currentDept={selectedDept}
             departments={DEPARTMENTS}
             onAcceptOffer={handleAcceptOffer}

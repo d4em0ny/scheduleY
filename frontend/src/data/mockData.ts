@@ -1,4 +1,24 @@
-import type { Department, StudentSection, Instructor, ScheduledSession, InterdeptRequest, AllocationRecommendation, User, CourseOfferingItem } from '../types';
+import type {
+  Department,
+  StudentSection,
+  Instructor,
+  ScheduledSession,
+  InterdeptRequest,
+  AllocationRecommendation,
+  User,
+  CourseOfferingItem,
+  TimeSlot,
+} from '../types';
+
+export const ALL_WEEK_SLOTS: TimeSlot[] = [1, 2, 3, 4, 5].flatMap((dayOfWeek) =>
+  [1, 2, 3, 4, 5, 6, 7].map((slot) => ({ dayOfWeek, slot }))
+);
+
+export function filterAvailableSlots(busySlots: TimeSlot[]): TimeSlot[] {
+  return ALL_WEEK_SLOTS.filter(
+    (cand) => !busySlots.some((b) => b.dayOfWeek === cand.dayOfWeek && b.slot === cand.slot)
+  );
+}
 
 export const DEMO_USERS: User[] = [
   {
@@ -96,6 +116,16 @@ export const SECTIONS: StudentSection[] = [
     assignedRoomNumber: 'Room 103',
     assignedBuilding: 'ENG-1',
   },
+  {
+    id: 'sec-6',
+    departmentCode: 'MATH',
+    programCode: 'BSMATH',
+    batchYear: 2024,
+    sectionName: 'MATH-Year 1 Sec A',
+    studentCount: 30,
+    assignedRoomNumber: 'Room 202',
+    assignedBuilding: 'SCI-1',
+  },
 ];
 
 export const INITIAL_INSTRUCTORS: Instructor[] = [
@@ -139,7 +169,7 @@ export const INITIAL_INSTRUCTORS: Instructor[] = [
     name: 'Dr. Ada Lovelace',
     email: 'ada.lovelace@university.edu',
     maxWeeklyWorkload: 12.0,
-    committedHours: 6.0,
+    committedHours: 4.0,
     heldHours: 3.0,
     qualifications: ['CALCULUS', 'DISCRETE_MATH', 'ALGEBRA'],
   },
@@ -179,7 +209,10 @@ export const INITIAL_INSTRUCTORS: Instructor[] = [
 ];
 
 export const INITIAL_COURSES: CourseOfferingItem[] = [
-  // Year 1 (2024 Batch)
+  // =========================================================================
+  // SEMESTER 1 COURSES (All Years 1-4)
+  // =========================================================================
+  // Year 1 Semester 1
   {
     id: 'crs-1',
     departmentCode: 'CS',
@@ -191,6 +224,7 @@ export const INITIAL_COURSES: CourseOfferingItem[] = [
     componentType: 'REGULAR_CLASSROOM',
     batchYear: 2024,
     yearLabel: 'Year 1',
+    semester: 1,
     sectionName: 'CS-Year 1 Sec A',
     assignedRoomNumber: 'ENG-1 Room 101',
     assignedInstructorName: 'Dr. Grace Hopper',
@@ -208,6 +242,7 @@ export const INITIAL_COURSES: CourseOfferingItem[] = [
     componentType: 'COMPUTER_LAB',
     batchYear: 2024,
     yearLabel: 'Year 1',
+    semester: 1,
     sectionName: 'CS-Year 1 Sec A',
     assignedRoomNumber: 'ENG-1 Lab 201',
     assignedInstructorName: 'Dr. Grace Hopper',
@@ -225,14 +260,51 @@ export const INITIAL_COURSES: CourseOfferingItem[] = [
     componentType: 'REGULAR_CLASSROOM',
     batchYear: 2024,
     yearLabel: 'Year 1',
+    semester: 1,
     sectionName: 'CS-Year 1 Sec A',
     assignedRoomNumber: 'ENG-1 Room 101',
-    assignedInstructorName: 'Dr. Ada Lovelace',
-    assignedInstructorId: 'inst-4',
+    assignedInstructorName: 'Dr. Carl Friedrich Gauss',
+    assignedInstructorId: 'inst-5',
     requiredQualification: 'CALCULUS',
   },
+  {
+    id: 'crs-math-1',
+    departmentCode: 'MATH',
+    courseCode: 'MATH-105',
+    courseTitle: 'Foundations of Linear Algebra',
+    creditHours: 4.0,
+    contactHours: 4.0,
+    weeklySessions: 2,
+    componentType: 'REGULAR_CLASSROOM',
+    batchYear: 2024,
+    yearLabel: 'Year 1',
+    semester: 1,
+    sectionName: 'MATH-Year 1 Sec A',
+    assignedRoomNumber: 'SCI-1 Room 202',
+    assignedInstructorName: 'Dr. Ada Lovelace',
+    assignedInstructorId: 'inst-4',
+    requiredQualification: 'ALGEBRA',
+  },
+  {
+    id: 'crs-ece-1',
+    departmentCode: 'ECE',
+    courseCode: 'ECE-101',
+    courseTitle: 'Digital Logic & Circuits',
+    creditHours: 3.0,
+    contactHours: 2.0,
+    weeklySessions: 2,
+    componentType: 'REGULAR_CLASSROOM',
+    batchYear: 2024,
+    yearLabel: 'Year 1',
+    semester: 1,
+    sectionName: 'ECE-Year 1 Sec A',
+    assignedRoomNumber: 'ENG-1 Room 103',
+    assignedInstructorName: 'Dr. Claude Shannon',
+    assignedInstructorId: 'inst-6',
+    requiredQualification: 'SIGNALS',
+  },
 
-  // Year 2 (2023 Batch)
+  // Year 2 Semester 1
   {
     id: 'crs-4',
     departmentCode: 'CS',
@@ -244,6 +316,7 @@ export const INITIAL_COURSES: CourseOfferingItem[] = [
     componentType: 'REGULAR_CLASSROOM',
     batchYear: 2023,
     yearLabel: 'Year 2',
+    semester: 1,
     sectionName: 'CS-Year 2 Sec A',
     assignedRoomNumber: 'ENG-1 Room 102',
     assignedInstructorName: 'Dr. Alan Turing',
@@ -261,10 +334,11 @@ export const INITIAL_COURSES: CourseOfferingItem[] = [
     componentType: 'REGULAR_CLASSROOM',
     batchYear: 2023,
     yearLabel: 'Year 2',
+    semester: 1,
     sectionName: 'CS-Year 2 Sec A',
     assignedRoomNumber: 'ENG-1 Room 102',
-    assignedInstructorName: 'Dr. Ada Lovelace',
-    assignedInstructorId: 'inst-4',
+    assignedInstructorName: undefined,
+    assignedInstructorId: undefined,
     requiredQualification: 'DISCRETE_MATH',
   },
   {
@@ -278,6 +352,7 @@ export const INITIAL_COURSES: CourseOfferingItem[] = [
     componentType: 'REGULAR_CLASSROOM',
     batchYear: 2023,
     yearLabel: 'Year 2',
+    semester: 1,
     sectionName: 'CS-Year 2 Sec A',
     assignedRoomNumber: 'ENG-1 Room 102',
     assignedInstructorName: 'Dr. John von Neumann',
@@ -285,7 +360,7 @@ export const INITIAL_COURSES: CourseOfferingItem[] = [
     requiredQualification: 'ARCHITECTURE',
   },
 
-  // Year 3 (2022 Batch)
+  // Year 3 Semester 1
   {
     id: 'crs-7',
     departmentCode: 'CS',
@@ -297,6 +372,7 @@ export const INITIAL_COURSES: CourseOfferingItem[] = [
     componentType: 'REGULAR_CLASSROOM',
     batchYear: 2022,
     yearLabel: 'Year 3',
+    semester: 1,
     sectionName: 'CS-Year 3 Sec A',
     assignedRoomNumber: 'ENG-1 Room 104',
     assignedInstructorName: 'Dr. Grace Hopper',
@@ -314,6 +390,7 @@ export const INITIAL_COURSES: CourseOfferingItem[] = [
     componentType: 'REGULAR_CLASSROOM',
     batchYear: 2022,
     yearLabel: 'Year 3',
+    semester: 1,
     sectionName: 'CS-Year 3 Sec A',
     assignedRoomNumber: 'ENG-1 Room 104',
     assignedInstructorName: 'Dr. Alan Turing',
@@ -321,7 +398,7 @@ export const INITIAL_COURSES: CourseOfferingItem[] = [
     requiredQualification: 'AI',
   },
 
-  // Year 4 (2021 Batch)
+  // Year 4 Semester 1
   {
     id: 'crs-9',
     departmentCode: 'CS',
@@ -333,6 +410,7 @@ export const INITIAL_COURSES: CourseOfferingItem[] = [
     componentType: 'REGULAR_CLASSROOM',
     batchYear: 2021,
     yearLabel: 'Year 4',
+    semester: 1,
     sectionName: 'CS-Year 4 Sec A',
     assignedRoomNumber: 'ENG-1 Room 105',
     assignedInstructorName: 'Dr. John von Neumann',
@@ -350,12 +428,133 @@ export const INITIAL_COURSES: CourseOfferingItem[] = [
     componentType: 'SEMINAR_ROOM',
     batchYear: 2021,
     yearLabel: 'Year 4',
+    semester: 1,
     sectionName: 'CS-Year 4 Sec A',
     assignedRoomNumber: 'ENG-1 Room 105',
     assignedInstructorName: 'Dr. Alan Turing',
     assignedInstructorId: 'inst-1',
     requiredQualification: 'THEORY',
   },
+
+  // =========================================================================
+  // SEMESTER 2 COURSES (Years 1-4)
+  // =========================================================================
+  {
+    id: 'crs-s2-1',
+    departmentCode: 'CS',
+    courseCode: 'CS-102',
+    courseTitle: 'Object-Oriented Software Engineering',
+    creditHours: 3.0,
+    contactHours: 3.0,
+    weeklySessions: 2,
+    componentType: 'REGULAR_CLASSROOM',
+    batchYear: 2024,
+    yearLabel: 'Year 1',
+    semester: 2,
+    sectionName: 'CS-Year 1 Sec A',
+    assignedRoomNumber: 'ENG-1 Room 101',
+    assignedInstructorName: 'Dr. Grace Hopper',
+    assignedInstructorId: 'inst-2',
+    requiredQualification: 'PROGRAMMING',
+  },
+  {
+    id: 'crs-s2-2',
+    departmentCode: 'CS',
+    courseCode: 'CS-202',
+    courseTitle: 'Design & Analysis of Algorithms',
+    creditHours: 3.0,
+    contactHours: 3.0,
+    weeklySessions: 2,
+    componentType: 'REGULAR_CLASSROOM',
+    batchYear: 2023,
+    yearLabel: 'Year 2',
+    semester: 2,
+    sectionName: 'CS-Year 2 Sec A',
+    assignedRoomNumber: 'ENG-1 Room 102',
+    assignedInstructorName: 'Dr. Alan Turing',
+    assignedInstructorId: 'inst-1',
+    requiredQualification: 'ALGORITHMS',
+  },
+  {
+    id: 'crs-s2-3',
+    departmentCode: 'CS',
+    courseCode: 'CS-302',
+    courseTitle: 'Computer Networks & Security',
+    creditHours: 3.0,
+    contactHours: 3.0,
+    weeklySessions: 2,
+    componentType: 'REGULAR_CLASSROOM',
+    batchYear: 2022,
+    yearLabel: 'Year 3',
+    semester: 2,
+    sectionName: 'CS-Year 3 Sec A',
+    assignedRoomNumber: 'ENG-1 Room 104',
+    assignedInstructorName: 'Dr. Claude Shannon',
+    assignedInstructorId: 'inst-6',
+    requiredQualification: 'NETWORKS',
+  },
+  {
+    id: 'crs-s2-4',
+    departmentCode: 'CS',
+    courseCode: 'CS-402',
+    courseTitle: 'Compiler Construction & Optimization',
+    creditHours: 3.0,
+    contactHours: 3.0,
+    weeklySessions: 2,
+    componentType: 'REGULAR_CLASSROOM',
+    batchYear: 2021,
+    yearLabel: 'Year 4',
+    semester: 2,
+    sectionName: 'CS-Year 4 Sec A',
+    assignedRoomNumber: 'ENG-1 Room 105',
+    assignedInstructorName: 'Dr. Grace Hopper',
+    assignedInstructorId: 'inst-2',
+    requiredQualification: 'COMPILERS',
+  },
+  {
+    id: 'crs-s2-math-1',
+    departmentCode: 'MATH',
+    courseCode: 'MATH-106',
+    courseTitle: 'Multivariable Calculus & Vector Analysis',
+    creditHours: 3.0,
+    contactHours: 3.0,
+    weeklySessions: 3,
+    componentType: 'REGULAR_CLASSROOM',
+    batchYear: 2024,
+    yearLabel: 'Year 1',
+    semester: 2,
+    sectionName: 'MATH-Year 1 Sec A',
+    assignedRoomNumber: 'SCI-1 Room 202',
+    assignedInstructorName: 'Dr. Carl Friedrich Gauss',
+    assignedInstructorId: 'inst-5',
+    requiredQualification: 'ANALYSIS',
+  },
+  {
+    id: 'crs-s2-ece-1',
+    departmentCode: 'ECE',
+    courseCode: 'ECE-102',
+    courseTitle: 'Electromagnetic Fields & Waves',
+    creditHours: 3.0,
+    contactHours: 3.0,
+    weeklySessions: 2,
+    componentType: 'REGULAR_CLASSROOM',
+    batchYear: 2024,
+    yearLabel: 'Year 1',
+    semester: 2,
+    sectionName: 'ECE-Year 1 Sec A',
+    assignedRoomNumber: 'ENG-1 Room 103',
+    assignedInstructorName: 'Dr. Nikola Tesla',
+    assignedInstructorId: 'inst-7',
+    requiredQualification: 'EM_THEORY',
+  },
+];
+
+// Dr. Ada Lovelace is busy Mon 08:00-10:00 (slots 1-2) and Wed 14:00-16:00 (slots 5-6) in MATH
+const ADA_BUSY_SLOTS: TimeSlot[] = [
+  { dayOfWeek: 1, slot: 1 },
+  { dayOfWeek: 1, slot: 2 },
+  { dayOfWeek: 3, slot: 5 },
+  { dayOfWeek: 3, slot: 6 },
 ];
 
 export const INITIAL_SESSIONS: ScheduledSession[] = [
@@ -413,15 +612,41 @@ export const INITIAL_SESSIONS: ScheduledSession[] = [
   },
   {
     id: 'sess-5',
-    courseCode: 'MATH-201',
-    courseTitle: 'Discrete Mathematics',
+    courseCode: 'MATH-105',
+    courseTitle: 'Foundations of Linear Algebra',
     componentType: 'REGULAR_CLASSROOM',
-    sectionName: 'CS-Year 2 Sec A',
+    sectionName: 'MATH-Year 1 Sec A',
     instructorName: 'Dr. Ada Lovelace',
     instructorId: 'inst-4',
-    roomNumber: 'ENG-1 Room 102',
-    dayOfWeek: 5, // Fri
-    startSlot: 3, // 10:00 - 12:00
+    roomNumber: 'SCI-1 Room 202',
+    dayOfWeek: 1, // Mon
+    startSlot: 1, // 08:00 - 10:00 (MATH home class)
+    slotDuration: 2,
+  },
+  {
+    id: 'sess-6',
+    courseCode: 'MATH-105',
+    courseTitle: 'Foundations of Linear Algebra',
+    componentType: 'REGULAR_CLASSROOM',
+    sectionName: 'MATH-Year 1 Sec A',
+    instructorName: 'Dr. Ada Lovelace',
+    instructorId: 'inst-4',
+    roomNumber: 'SCI-1 Room 202',
+    dayOfWeek: 3, // Wed
+    startSlot: 5, // 14:00 - 16:00 (MATH home class)
+    slotDuration: 2,
+  },
+  {
+    id: 'sess-7',
+    courseCode: 'ECE-101',
+    courseTitle: 'Digital Logic & Circuits',
+    componentType: 'REGULAR_CLASSROOM',
+    sectionName: 'ECE-Year 1 Sec A',
+    instructorName: 'Dr. Claude Shannon',
+    instructorId: 'inst-6',
+    roomNumber: 'ENG-1 Room 103',
+    dayOfWeek: 2, // Tue
+    startSlot: 1, // 08:00 - 10:00
     slotDuration: 2,
   },
 ];
@@ -436,17 +661,16 @@ export const INITIAL_REQUESTS: InterdeptRequest[] = [
     courseTitle: 'Discrete Mathematics',
     componentType: 'REGULAR_CLASSROOM',
     sectionName: 'CS-Year 2 Sec A',
-    requiredHours: 3.0,
-    requiredQualification: 'DISCRETE_MATH',
     status: 'OFFERED',
-    remarks: 'Need experienced faculty for CS sophomores core discrete logic.',
+    remarks: 'Need mathematics faculty for CS Year 2 core discrete logic course.',
     createdAt: '2026-11-05 09:30',
     currentOffer: {
       id: 'off-1',
-      instructorId: 'inst-3',
+      instructorId: 'inst-4',
       instructorName: 'Dr. Ada Lovelace',
       offeredHours: 3.0,
-      expiresAt: '2026-11-10 12:00',
+      availableSlots: filterAvailableSlots(ADA_BUSY_SLOTS),
+      expiresAt: '2026-11-12 18:00',
       isActiveHold: true,
     },
   },
@@ -459,10 +683,8 @@ export const INITIAL_REQUESTS: InterdeptRequest[] = [
     courseTitle: 'Programming for Engineers',
     componentType: 'COMPUTER_LAB',
     sectionName: 'ECE-Year 1 Sec A',
-    requiredHours: 2.0,
-    requiredQualification: 'PROGRAMMING',
     status: 'SUBMITTED',
-    remarks: 'Seeking CS lab instructor for Python embedded devices module.',
+    remarks: 'Requesting CS instructor for Python embedded devices lab section.',
     createdAt: '2026-11-06 14:15',
   },
 ];
@@ -478,7 +700,7 @@ export const INITIAL_RECOMMENDATIONS: AllocationRecommendation[] = [
     recommendedInstructorId: 'inst-2',
     recommendedInstructorName: 'Dr. Grace Hopper',
     qualificationMatch: true,
-    utilizationAfter: 0.78, // (8 + 3)/14
+    utilizationAfter: 0.78,
     status: 'RECOMMENDED',
   },
   {
@@ -491,7 +713,7 @@ export const INITIAL_RECOMMENDATIONS: AllocationRecommendation[] = [
     recommendedInstructorId: 'inst-1',
     recommendedInstructorName: 'Dr. Alan Turing',
     qualificationMatch: true,
-    utilizationAfter: 0.83, // (7 + 3)/12
+    utilizationAfter: 0.83,
     status: 'RECOMMENDED',
   },
 ];

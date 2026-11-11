@@ -33,7 +33,7 @@ class CoordinationService:
         supplying_dept_id: uuid.UUID,
         offering_id: uuid.UUID,
         course_component_id: uuid.UUID,
-        required_hours: float,
+        required_hours: Optional[float] = None,
         required_qualification_tag: Optional[str] = None,
         remarks: Optional[str] = None,
         dept_code: str = "DEPT",
@@ -41,6 +41,16 @@ class CoordinationService:
     ) -> InterdepartmentalRequest:
         if requesting_dept_id == supplying_dept_id:
             raise ValueError("Requesting department and supplying department cannot be the same")
+
+        if required_hours is None:
+            comp_res = await session.execute(
+                select(CourseComponent).where(CourseComponent.id == course_component_id)
+            )
+            comp = comp_res.scalar_one_or_none()
+            if not comp:
+                raise ValueError("Course component not found and required_hours not specified")
+            required_hours = comp.weekly_contact_hours
+
         if required_hours <= 0:
             raise ValueError("Required hours must be strictly positive")
 

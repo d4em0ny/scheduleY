@@ -1,5 +1,12 @@
-import { useState } from 'react';
-import type { InterdeptRequest, Instructor, Department, RoomCategory } from '../types';
+import { useState, useMemo } from 'react';
+import type {
+  InterdeptRequest,
+  Instructor,
+  Department,
+  ScheduledSession,
+  CourseOfferingItem,
+  TimeSlot,
+} from '../types';
 import {
   GitPullRequest,
   CheckCircle2,
@@ -10,23 +17,89 @@ import {
   AlertTriangle,
   Lock,
   Plus,
-  Sparkles,
+  CalendarCheck,
+  ShieldCheck,
 } from 'lucide-react';
 
 interface CoordinationHubProps {
   requests: InterdeptRequest[];
   instructors: Instructor[];
+  sessions: ScheduledSession[];
+  courses: CourseOfferingItem[];
   currentDept: string;
   departments: Department[];
   onAcceptOffer: (requestId: string) => void;
   onRejectOffer: (requestId: string) => void;
-  onMakeOffer: (requestId: string, instructorId: string, hours: number) => void;
+  onMakeOffer: (
+    requestId: string,
+    instructorId: string,
+    hours: number,
+    availableSlots: TimeSlot[]
+  ) => void;
   onCreateRequest: (newReq: InterdeptRequest) => void;
+}
+
+const DAYS = [
+  { index: 1, short: 'Mon', name: 'Monday' },
+  { index: 2, short: 'Tue', name: 'Tuesday' },
+  { index: 3, short: 'Wed', name: 'Wednesday' },
+  { index: 4, short: 'Thu', name: 'Thursday' },
+  { index: 5, short: 'Fri', name: 'Friday' },
+];
+
+const SLOTS = [
+  { slot: 1, start: '08:00', end: '09:00', label: '08-09' },
+  { slot: 2, start: '09:00', end: '10:00', label: '09-10' },
+  { slot: 3, start: '10:00', end: '11:00', label: '10-11' },
+  { slot: 4, start: '11:00', end: '12:00', label: '11-12' },
+  { slot: 5, start: '14:00', end: '15:00', label: '14-15' },
+  { slot: 6, start: '15:00', end: '16:00', label: '15-16' },
+  { slot: 7, start: '16:00', end: '17:00', label: '16-17' },
+];
+
+function slotKey(dayOfWeek: number, slot: number): string {
+  return `${dayOfWeek}-${slot}`;
+}
+
+function summarizeDaySlots(daySlots: number[]): string {
+  if (daySlots.length === 0) return 'None';
+  if (daySlots.length === 7) return 'All Free (08:00–12:00, 14:00–17:00)';
+
+  const sorted = [...daySlots].sort((a, b) => a - b);
+  const ranges: string[] = [];
+  let start = sorted[0];
+  let prev = sorted[0];
+
+  const flushRange = (s: number, e: number) => {
+    const startMeta = SLOTS.find((x) => x.slot === s);
+    const endMeta = SLOTS.find((x) => x.slot === e);
+    if (startMeta && endMeta) {
+      ranges.push(`${startMeta.start}–${endMeta.end}`);
+    }
+  };
+
+  for (let i = 1; i < sorted.length; i++) {
+    const curr = sorted[i];
+    // Contiguous within same half-day block (do not merge slot 4 -> slot 5 across 12-14 break)
+    const sameBlock = (prev <= 4 && curr <= 4) || (prev >= 5 && curr >= 5);
+    if (curr === prev + 1 && sameBlock) {
+      prev = curr;
+    } else {
+      flushRange(start, prev);
+      start = curr;
+      prev = curr;
+    }
+  }
+  flushRange(start, prev);
+
+  return ranges.join(', ');
 }
 
 export const CoordinationHub: React.FC<CoordinationHubProps> = ({
   requests,
   instructors,
+  sessions,
+  courses,
   currentDept,
   departments,
   onAcceptOffer,
@@ -35,28 +108,37 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
   onCreateRequest,
 }) => {
   const [filterDirection, setFilterDirection] = useState<'incoming' | 'outgoing' | 'all'>('all');
+
+  // Offer Modal state (Supplying Dept provides instructor + conflict-free available slots)
   const [activeOfferModalReq, setActiveOfferModalReq] = useState<InterdeptRequest | null>(null);
   const [selectedInstructorId, setSelectedInstructorId] = useState<string>('');
   const [offeredHours, setOfferedHours] = useState<number>(3);
+  const [selectedSlotKeys, setSelectedSlotKeys] = useState<Set<string>>(new Set());
 
-  // New Request Modal state
+  // New Request Modal state (Requesting Dept simply asks an instructor from a department for a course)
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [reqDept, setReqDept] = useState<string>(currentDept !== 'ALL' ? currentDept : 'CS');
   const [supDept, setSupDept] = useState<string>(
-    (currentDept === 'CS' ? 'MATH' : currentDept === 'MATH' ? 'CS' : 'CS')
+    currentDept === 'CS' ? 'MATH' : currentDept === 'MATH' ? 'CS' : 'CS'
   );
+  const [selectedCourseId, setSelectedCourseId] = useState<string>('');
   const [courseCode, setCourseCode] = useState<string>('MATH-201');
   const [courseTitle, setCourseTitle] = useState<string>('Discrete Mathematics');
   const [sectionName, setSectionName] = useState<string>('CS-Year 2 Sec A');
-  const [componentType, setComponentType] = useState<RoomCategory>('REGULAR_CLASSROOM');
-  const [requiredHours, setRequiredHours] = useState<number>(3.0);
-  const [requiredQual, setRequiredQual] = useState<string>('DISCRETE_MATH');
   const [remarks, setRemarks] = useState<string>(
-    'Requesting experienced faculty for core curriculum section. Morning slots preferred.'
+    'Requesting an available instructor from your department for this course.'
   );
 
-  // Sync requesting dept when currentDept prop changes
   const effectiveRequestingDept = currentDept !== 'ALL' ? currentDept : reqDept;
+
+  // Courses belonging to requesting department (for one-click course selection when asking)
+  const deptCourses = useMemo(
+    () =>
+      courses.filter(
+        (c) => effectiveRequestingDept === 'ALL' || c.departmentCode === effectiveRequestingDept
+      ),
+    [courses, effectiveRequestingDept]
+  );
 
   // Filter requests
   const filteredRequests = requests.filter((r) => {
@@ -66,27 +148,62 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
     return r.requestingDept === currentDept || r.supplyingDept === currentDept;
   });
 
+  // Map of busy slots (key: "day-slot" -> session label) for selected instructor in Offer Modal
+  const instructorBusyMap = useMemo(() => {
+    const map = new Map<string, string>();
+    if (!selectedInstructorId) return map;
+
+    for (const sess of sessions) {
+      if (sess.instructorId === selectedInstructorId) {
+        for (let offset = 0; offset < sess.slotDuration; offset++) {
+          const s = sess.startSlot + offset;
+          map.set(slotKey(sess.dayOfWeek, s), `${sess.courseCode} (${sess.sectionName})`);
+        }
+      }
+    }
+    return map;
+  }, [sessions, selectedInstructorId]);
+
+  const computeFreeSlotKeys = (instId: string): Set<string> => {
+    const busy = new Set<string>();
+    for (const sess of sessions) {
+      if (sess.instructorId === instId) {
+        for (let offset = 0; offset < sess.slotDuration; offset++) {
+          busy.add(slotKey(sess.dayOfWeek, sess.startSlot + offset));
+        }
+      }
+    }
+    const free = new Set<string>();
+    for (const d of DAYS) {
+      for (const s of SLOTS) {
+        const key = slotKey(d.index, s.slot);
+        if (!busy.has(key)) free.add(key);
+      }
+    }
+    return free;
+  };
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'ACCEPTED':
         return (
           <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
             <CheckCircle2 className="w-3.5 h-3.5" />
-            <span>Accepted</span>
+            <span>Accepted & Assigned</span>
           </span>
         );
       case 'OFFERED':
         return (
           <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-xs font-bold badge-navy-gradient text-[#0e0447]">
             <Clock className="w-3.5 h-3.5 text-[#0e0447]" />
-            <span>Offer Pending</span>
+            <span>Instructor Provided</span>
           </span>
         );
       case 'REJECTED':
         return (
           <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200">
             <XCircle className="w-3.5 h-3.5" />
-            <span>Rejected</span>
+            <span>Declined</span>
           </span>
         );
       case 'UNDER_REVIEW':
@@ -100,7 +217,7 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
         return (
           <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
             <Clock className="w-3.5 h-3.5" />
-            <span>Submitted</span>
+            <span>Awaiting Instructor</span>
           </span>
         );
     }
@@ -108,47 +225,93 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
 
   const handleOpenOfferModal = (req: InterdeptRequest) => {
     setActiveOfferModalReq(req);
-    const qualified = instructors.filter(
-      (i) => i.departmentCode === req.supplyingDept && i.qualifications.includes(req.requiredQualification)
-    );
-    setSelectedInstructorId(qualified[0]?.id || instructors.filter((i) => i.departmentCode === req.supplyingDept)[0]?.id || '');
-    setOfferedHours(req.requiredHours);
+    const deptInsts = instructors.filter((i) => i.departmentCode === req.supplyingDept);
+    const bestInst = deptInsts[0];
+
+    if (bestInst) {
+      setSelectedInstructorId(bestInst.id);
+      setSelectedSlotKeys(computeFreeSlotKeys(bestInst.id));
+      const availCap = Math.max(
+        0,
+        bestInst.maxWeeklyWorkload - (bestInst.committedHours + bestInst.heldHours)
+      );
+      const matchedCourse = courses.find(
+        (c) => c.courseCode === req.courseCode && c.sectionName === req.sectionName
+      );
+      const suggestedHours = Math.min(
+        availCap,
+        req.requiredHours || matchedCourse?.contactHours || 3.0
+      );
+      setOfferedHours(Math.max(1, suggestedHours));
+    } else {
+      setSelectedInstructorId('');
+      setSelectedSlotKeys(new Set());
+      setOfferedHours(0);
+    }
+  };
+
+  const handleInstructorChange = (instId: string) => {
+    setSelectedInstructorId(instId);
+    setSelectedSlotKeys(computeFreeSlotKeys(instId));
+    const inst = instructors.find((i) => i.id === instId);
+    if (inst && activeOfferModalReq) {
+      const availCap = Math.max(0, inst.maxWeeklyWorkload - (inst.committedHours + inst.heldHours));
+      const matchedCourse = courses.find(
+        (c) =>
+          c.courseCode === activeOfferModalReq.courseCode &&
+          c.sectionName === activeOfferModalReq.sectionName
+      );
+      setOfferedHours(Math.max(0.5, Math.min(availCap, matchedCourse?.contactHours || 3.0)));
+    }
+  };
+
+  const handleToggleSlot = (day: number, slot: number) => {
+    const key = slotKey(day, slot);
+    if (instructorBusyMap.has(key)) return; // Locked by supplying dept schedule!
+    setSelectedSlotKeys((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
   };
 
   const handleSubmitOffer = () => {
     if (!activeOfferModalReq || !selectedInstructorId) return;
-    onMakeOffer(activeOfferModalReq.id, selectedInstructorId, offeredHours);
+    const availableSlots: TimeSlot[] = Array.from(selectedSlotKeys).map((k) => {
+      const [d, s] = k.split('-').map(Number);
+      return { dayOfWeek: d, slot: s };
+    });
+    onMakeOffer(activeOfferModalReq.id, selectedInstructorId, offeredHours, availableSlots);
     setActiveOfferModalReq(null);
   };
 
-  const handlePresetSelect = (
-    code: string,
-    title: string,
-    targetDept: string,
-    qual: string,
-    hours: number
-  ) => {
-    setCourseCode(code);
-    setCourseTitle(title);
-    setSupDept(targetDept);
-    setRequiredQual(qual);
-    setRequiredHours(hours);
+  const handlePickExistingCourse = (cId: string) => {
+    setSelectedCourseId(cId);
+    if (!cId) return;
+    const crs = courses.find((c) => c.id === cId);
+    if (crs) {
+      setCourseCode(crs.courseCode);
+      setCourseTitle(crs.courseTitle);
+      setSectionName(crs.sectionName);
+    }
   };
 
   const handleCreateNewRequest = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!courseCode.trim() || !courseTitle.trim()) return;
+
+    const matchedCourse = courses.find((c) => c.id === selectedCourseId);
 
     const newReq: InterdeptRequest = {
       id: `req-${Date.now()}`,
-      requestNumber: `REQ-2026-${Math.floor(100 + Math.random() * 900)}`,
+      requestNumber: `REQ-${effectiveRequestingDept}-${Math.floor(100 + Math.random() * 900)}`,
       requestingDept: effectiveRequestingDept,
       supplyingDept: supDept,
       courseCode: courseCode.trim().toUpperCase(),
-      courseTitle: formTitleClean(courseTitle),
-      sectionName: sectionName.trim(),
-      componentType: componentType,
-      requiredHours: requiredHours,
-      requiredQualification: requiredQual.trim().toUpperCase(),
+      courseTitle: courseTitle.trim(),
+      sectionName: sectionName.trim() || `${effectiveRequestingDept}-Year 1 Sec A`,
+      componentType: matchedCourse?.componentType || 'REGULAR_CLASSROOM',
       status: 'SUBMITTED',
       remarks: remarks.trim(),
       createdAt: new Date().toISOString().slice(0, 16).replace('T', ' '),
@@ -158,10 +321,6 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
     setIsCreateModalOpen(false);
     setFilterDirection('outgoing');
   };
-
-  function formTitleClean(title: string) {
-    return title.trim() || 'Core Academic Course';
-  }
 
   const selectedInstObj = instructors.find((i) => i.id === selectedInstructorId);
   const remainingCap = selectedInstObj
@@ -179,10 +338,10 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
           </div>
           <div>
             <h2 className="font-bold text-sm text-slate-900">
-              Interdepartmental Coordination Hub
+              Interdepartmental Instructor Coordination
             </h2>
             <p className="text-[11px] text-slate-500">
-              Manage cross-department instructor demands, offers, and capacity escrow holds.
+              Ask another department for an instructor; they provide the faculty member along with conflict-free available schedule hours.
             </p>
           </div>
         </div>
@@ -207,7 +366,7 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
                   : 'text-slate-600 hover:text-[#0e0447]'
               }`}
             >
-              Incoming Demands
+              Incoming Requests
             </button>
             <button
               onClick={() => setFilterDirection('outgoing')}
@@ -217,24 +376,36 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
                   : 'text-slate-600 hover:text-[#0e0447]'
               }`}
             >
-              Our Requests
+              Sent Requests
             </button>
           </div>
 
-          {/* Create Request Button */}
+          {/* Ask Instructor Button */}
           <button
             onClick={() => {
-              if (currentDept !== 'ALL') {
-                setReqDept(currentDept);
-                const other = departments.find((d) => d.code !== currentDept);
-                if (other) setSupDept(other.code);
+              const effectiveReq = currentDept !== 'ALL' ? currentDept : 'CS';
+              setReqDept(effectiveReq);
+              const other = departments.find((d) => d.code !== effectiveReq);
+              if (other) setSupDept(other.code);
+              const unassigned = courses.find(
+                (c) =>
+                  (effectiveReq === 'ALL' || c.departmentCode === effectiveReq) &&
+                  !c.assignedInstructorName
+              );
+              if (unassigned) {
+                setSelectedCourseId(unassigned.id);
+                setCourseCode(unassigned.courseCode);
+                setCourseTitle(unassigned.courseTitle);
+                setSectionName(unassigned.sectionName);
+              } else {
+                setSelectedCourseId('');
               }
               setIsCreateModalOpen(true);
             }}
             className="btn-navy-gradient flex items-center space-x-1.5 px-4 py-2 rounded-xl text-xs font-bold shadow-xs cursor-pointer"
           >
             <Plus className="w-4 h-4" />
-            <span>Request Faculty</span>
+            <span>Ask Instructor from Dept</span>
           </button>
         </div>
       </div>
@@ -246,7 +417,7 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
             <GitPullRequest className="w-12 h-12 mx-auto mb-3 text-slate-300" />
             <p className="font-bold text-slate-700">No coordination requests found</p>
             <p className="text-xs text-slate-400 mt-1">
-              Select another filter or create an instructor request using the "Request Faculty" button.
+              Click "Ask Instructor from Dept" to request teaching faculty from another department.
             </p>
           </div>
         ) : (
@@ -283,15 +454,18 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
                     <p className="font-bold text-slate-900 text-sm">
                       {req.courseCode} • {req.courseTitle}
                     </p>
-                    <p className="text-slate-500 mt-0.5">Section: {req.sectionName} ({req.componentType})</p>
+                    <p className="text-slate-500 mt-0.5">Section: {req.sectionName}</p>
                   </div>
 
                   <div>
-                    <span className="text-slate-400 block mb-0.5 font-medium">Required Skill:</span>
-                    <div className="inline-block mt-0.5 px-2 py-0.5 rounded badge-navy-gradient font-mono font-bold text-[#0e0447]">
-                      {req.requiredQualification}
+                    <span className="text-slate-400 block mb-0.5 font-medium">Request Type:</span>
+                    <div className="inline-flex items-center space-x-1.5 mt-0.5 px-2.5 py-1 rounded-lg badge-navy-gradient font-semibold text-[#0e0447]">
+                      <CalendarCheck className="w-3.5 h-3.5 text-[#0e0447]" />
+                      <span>Instructor Request from {req.supplyingDept}</span>
                     </div>
-                    <p className="text-slate-600 font-semibold mt-1">{req.requiredHours} Weekly Contact Hours</p>
+                    <p className="text-[11px] text-slate-500 mt-1">
+                      Available hours & schedule windows are supplied by {req.supplyingDept}
+                    </p>
                   </div>
 
                   <div>
@@ -302,25 +476,53 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
                   </div>
                 </div>
 
-                {/* Offer Details if present */}
+                {/* Offer Details & Provided Conflict-Free Available Time Slots */}
                 {req.currentOffer && (
-                  <div className="card-edge-subtle mt-2 p-3 rounded-xl bg-gradient-to-r from-[#0e0447]/6 via-[#f8f9fb] to-[#f5f5f7] border border-[#0e0447]/20 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-                    <div className="flex items-center space-x-2">
-                      <Lock className="w-4 h-4 text-[#0e0447]" />
-                      <div>
-                        <span className="text-slate-600">Proposed Faculty Offer: </span>
-                        <strong className="text-slate-900 font-bold">
-                          {req.currentOffer.instructorName}
-                        </strong>{' '}
-                        <span className="text-[#0e0447] font-semibold">
-                          ({req.currentOffer.offeredHours} hrs capacity held in escrow)
+                  <div className="card-edge-subtle mt-2 p-3.5 rounded-xl bg-gradient-to-r from-[#0e0447]/6 via-[#f8f9fb] to-[#f5f5f7] border border-[#0e0447]/20 space-y-2.5 text-xs">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                      <div className="flex items-center space-x-2">
+                        <ShieldCheck className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                        <div>
+                          <span className="text-slate-600">Provided Instructor: </span>
+                          <strong className="text-slate-900 font-bold">
+                            {req.currentOffer.instructorName}
+                          </strong>{' '}
+                          <span className="text-[#0e0447] font-semibold">
+                            ({req.currentOffer.offeredHours} hrs weekly workload allocated)
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center space-x-2 text-[11px] text-slate-500">
+                        <span className="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold">
+                          {req.currentOffer.availableSlots.length} conflict-free slots granted
                         </span>
                       </div>
                     </div>
 
-                    <div className="flex items-center space-x-2 text-[11px] text-slate-500">
-                      <Clock className="w-3.5 h-3.5 text-slate-400" />
-                      <span>Hold valid until: {req.currentOffer.expiresAt}</span>
+                    {/* Day-by-Day Free Schedule Windows */}
+                    <div className="pt-2 border-t border-slate-200/80">
+                      <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">
+                        Instructor Available Schedule Windows (Guaranteed Zero Conflict with {req.supplyingDept}):
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-1.5">
+                        {DAYS.map((d) => {
+                          const daySlots = req.currentOffer!.availableSlots
+                            .filter((s) => s.dayOfWeek === d.index)
+                            .map((s) => s.slot);
+                          return (
+                            <div
+                              key={d.index}
+                              className="bg-white border border-slate-200/80 rounded-lg px-2 py-1.5 text-[11px]"
+                            >
+                              <span className="font-bold text-[#0e0447] block">{d.short}</span>
+                              <span className="text-slate-600 font-mono text-[10px] leading-tight block">
+                                {summarizeDaySlots(daySlots)}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
                   </div>
                 )}
@@ -334,7 +536,7 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
                         className="btn-navy-gradient px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all shadow-xs flex items-center space-x-1.5 cursor-pointer"
                       >
                         <Send className="w-3.5 h-3.5" />
-                        <span>Select & Offer Instructor</span>
+                        <span>Provide Instructor & Available Hours</span>
                       </button>
                     )}
 
@@ -344,14 +546,14 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
                         onClick={() => onRejectOffer(req.id)}
                         className="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-rose-50 text-slate-700 hover:text-rose-700 border border-slate-200 hover:border-rose-300 transition-all cursor-pointer"
                       >
-                        Decline Offer
+                        Decline
                       </button>
                       <button
                         onClick={() => onAcceptOffer(req.id)}
                         className="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white transition-all shadow-xs flex items-center space-x-1.5 cursor-pointer"
                       >
                         <CheckCircle2 className="w-3.5 h-3.5" />
-                        <span>Accept Offer & Commit Load</span>
+                        <span>Accept Instructor & Available Hours</span>
                       </button>
                     </>
                   )}
@@ -362,10 +564,10 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
         )}
       </div>
 
-      {/* CREATE NEW REQUEST MODAL */}
+      {/* ASK INSTRUCTOR MODAL (Simplified: Ask Instructor from Department for a Course — NO Class Hour or Instructor Name required) */}
       {isCreateModalOpen && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150 overflow-y-auto">
-          <div className="card-edge-gradient bg-white border border-slate-200 rounded-2xl max-w-xl w-full p-6 shadow-2xl my-8">
+          <div className="card-edge-gradient bg-white border border-slate-200 rounded-2xl max-w-lg w-full p-6 shadow-2xl my-8">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div className="flex items-center space-x-2">
                 <div className="p-2 rounded-xl badge-navy-gradient text-[#0e0447]">
@@ -373,10 +575,10 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
                 </div>
                 <div>
                   <h3 className="font-bold text-base text-slate-900">
-                    Submit Faculty Coordination Request
+                    Ask Instructor from Another Department
                   </h3>
                   <p className="text-xs text-slate-500">
-                    Request teaching capacity from another academic department
+                    Select the supplying department and course. They will assign an instructor with conflict-free available hours.
                   </p>
                 </div>
               </div>
@@ -386,76 +588,6 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
               >
                 ✕
               </button>
-            </div>
-
-            {/* Quick Presets */}
-            <div className="mt-4 p-3 bg-[#f8f9fa] rounded-xl border border-slate-200/80">
-              <span className="text-[11px] font-bold text-slate-600 flex items-center space-x-1 mb-2">
-                <Sparkles className="w-3 h-3 text-[#0e0447]" />
-                <span>Common Interdepartmental Presets:</span>
-              </span>
-              <div className="flex flex-wrap gap-1.5">
-                <button
-                  type="button"
-                  onClick={() =>
-                    handlePresetSelect(
-                      'MATH-201',
-                      'Discrete Mathematics',
-                      'MATH',
-                      'DISCRETE_MATH',
-                      3.0
-                    )
-                  }
-                  className="px-2.5 py-1 rounded-lg bg-white hover:badge-navy-gradient hover:border-[#0e0447]/30 border border-slate-200 text-[11px] text-slate-700 font-medium transition-colors cursor-pointer"
-                >
-                  MATH-201 Discrete Math (MATH)
-                </button>
-                <button
-                  type="button"
-                  onClick={() =>
-                    handlePresetSelect(
-                      'MATH-101',
-                      'Calculus for Engineers',
-                      'MATH',
-                      'CALCULUS',
-                      3.0
-                    )
-                  }
-                  className="px-2.5 py-1 rounded-lg bg-white hover:badge-navy-gradient hover:border-[#0e0447]/30 border border-slate-200 text-[11px] text-slate-700 font-medium transition-colors cursor-pointer"
-                >
-                  MATH-101 Calculus (MATH)
-                </button>
-                <button
-                  type="button"
-                  onClick={() =>
-                    handlePresetSelect(
-                      'PHYS-101',
-                      'General Physics I',
-                      'ECE',
-                      'PHYSICS',
-                      4.0
-                    )
-                  }
-                  className="px-2.5 py-1 rounded-lg bg-white hover:badge-navy-gradient hover:border-[#0e0447]/30 border border-slate-200 text-[11px] text-slate-700 font-medium transition-colors cursor-pointer"
-                >
-                  PHYS-101 Physics (ECE)
-                </button>
-                <button
-                  type="button"
-                  onClick={() =>
-                    handlePresetSelect(
-                      'ECE-201',
-                      'Digital Circuits & Microprocessors',
-                      'ECE',
-                      'CIRCUITS',
-                      3.0
-                    )
-                  }
-                  className="px-2.5 py-1 rounded-lg bg-white hover:badge-navy-gradient hover:border-[#0e0447]/30 border border-slate-200 text-[11px] text-slate-700 font-medium transition-colors cursor-pointer"
-                >
-                  ECE-201 Digital Circuits (ECE)
-                </button>
-              </div>
             </div>
 
             <form onSubmit={handleCreateNewRequest} className="space-y-4 mt-4 text-xs">
@@ -486,12 +618,12 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
 
                 <div>
                   <label className="block text-slate-700 font-semibold mb-1">
-                    Supplying Department:
+                    Ask Instructor From Dept:
                   </label>
                   <select
                     value={supDept}
                     onChange={(e) => setSupDept(e.target.value)}
-                    className="w-full bg-[#f8f9fa] border border-slate-200 rounded-xl p-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0e0447]/30 font-semibold"
+                    className="w-full bg-[#f8f9fa] border border-slate-200 rounded-xl p-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0e0447]/30 font-bold text-[#0e0447]"
                   >
                     {departments
                       .filter((d) => d.code !== effectiveRequestingDept)
@@ -504,7 +636,26 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              {/* Pick from department's curriculum */}
+              <div>
+                <label className="block text-slate-700 font-semibold mb-1">
+                  Pick Department Course (Optional Quick Fill):
+                </label>
+                <select
+                  value={selectedCourseId}
+                  onChange={(e) => handlePickExistingCourse(e.target.value)}
+                  className="w-full bg-[#f8f9fa] border border-slate-200 rounded-xl p-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0e0447]/30 font-medium"
+                >
+                  <option value="">— Custom / Enter course details below —</option>
+                  {deptCourses.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.courseCode} • {c.courseTitle} ({c.sectionName})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="grid grid-cols-3 gap-3">
                 <div>
                   <label className="block text-slate-700 font-semibold mb-1">Course Code:</label>
                   <input
@@ -522,15 +673,13 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
                   <input
                     type="text"
                     required
-                    placeholder="e.g. Discrete Mathematics"
+                    placeholder="e.g. Discrete Math"
                     value={courseTitle}
                     onChange={(e) => setCourseTitle(e.target.value)}
                     className="w-full bg-[#f8f9fa] border border-slate-200 rounded-xl p-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0e0447]/30"
                   />
                 </div>
-              </div>
 
-              <div className="grid grid-cols-3 gap-3">
                 <div>
                   <label className="block text-slate-700 font-semibold mb-1">Target Section:</label>
                   <input
@@ -542,66 +691,24 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
                     className="w-full bg-[#f8f9fa] border border-slate-200 rounded-xl p-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0e0447]/30"
                   />
                 </div>
-
-                <div>
-                  <label className="block text-slate-700 font-semibold mb-1">Facility Type:</label>
-                  <select
-                    value={componentType}
-                    onChange={(e) => setComponentType(e.target.value as RoomCategory)}
-                    className="w-full bg-[#f8f9fa] border border-slate-200 rounded-xl p-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0e0447]/30"
-                  >
-                    <option value="REGULAR_CLASSROOM">Regular Classroom</option>
-                    <option value="COMPUTER_LAB">Computer Lab</option>
-                    <option value="SCIENCE_LAB">Science Lab</option>
-                    <option value="SEMINAR_ROOM">Seminar Room</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-slate-700 font-semibold mb-1">Required Hours:</label>
-                  <input
-                    type="number"
-                    min="1"
-                    max="10"
-                    step="0.5"
-                    required
-                    value={requiredHours}
-                    onChange={(e) => setRequiredHours(parseFloat(e.target.value) || 3)}
-                    className="w-full bg-[#f8f9fa] border border-slate-200 rounded-xl p-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0e0447]/30 font-bold text-[#0e0447]"
-                  />
-                </div>
               </div>
 
               <div>
                 <label className="block text-slate-700 font-semibold mb-1">
-                  Required Faculty Qualification Tag:
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. DISCRETE_MATH, CALCULUS, CIRCUITS"
-                  value={requiredQual}
-                  onChange={(e) => setRequiredQual(e.target.value)}
-                  className="w-full bg-[#f8f9fa] border border-slate-200 rounded-xl p-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0e0447]/30 font-mono"
-                />
-              </div>
-
-              <div>
-                <label className="block text-slate-700 font-semibold mb-1">
-                  Remarks & Preferred Timings:
+                  Notes for Supplying Department (Optional):
                 </label>
                 <textarea
                   rows={2}
                   value={remarks}
                   onChange={(e) => setRemarks(e.target.value)}
-                  placeholder="e.g. Preferred morning slots Mon/Wed/Fri. Section has 55 enrolled students."
+                  placeholder="e.g. Requesting an instructor for CS Year 2 Section A."
                   className="w-full bg-[#f8f9fa] border border-slate-200 rounded-xl p-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0e0447]/30"
                 />
               </div>
 
               <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
-                <span className="text-[11px] text-slate-400">
-                  Holds will be dynamically locked in escrow once offer is made.
+                <span className="text-[11px] text-slate-500">
+                  No hours or instructor name needed — {supDept} provides their available slots.
                 </span>
 
                 <div className="flex items-center space-x-3">
@@ -617,7 +724,7 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
                     className="btn-navy-gradient px-4 py-2 rounded-xl text-xs font-bold shadow-xs transition-all flex items-center space-x-1.5 cursor-pointer"
                   >
                     <Send className="w-3.5 h-3.5" />
-                    <span>Submit Request</span>
+                    <span>Ask {supDept} for Instructor</span>
                   </button>
                 </div>
               </div>
@@ -626,89 +733,176 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
         </div>
       )}
 
-      {/* Offer Modal */}
+      {/* PROVIDE INSTRUCTOR + AVAILABLE HOURS MODAL (Supplying Dept) */}
       {activeOfferModalReq && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150">
-          <div className="card-edge-gradient bg-white border border-slate-200 rounded-2xl max-w-md w-full p-6 shadow-2xl">
-            <h3 className="font-bold text-base text-slate-900 mb-1">
-              Offer Instructor to {activeOfferModalReq.requestingDept}
-            </h3>
-            <p className="text-xs text-slate-500 mb-4">
-              For {activeOfferModalReq.courseCode} ({activeOfferModalReq.requiredHours} hours required)
-            </p>
-
-            <div className="space-y-4 text-xs">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150 overflow-y-auto">
+          <div className="card-edge-gradient bg-white border border-slate-200 rounded-2xl max-w-2xl w-full p-6 shadow-2xl my-8">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div>
-                <label className="block text-slate-700 font-semibold mb-1">
-                  Select {activeOfferModalReq.supplyingDept} Instructor:
-                </label>
-                <select
-                  value={selectedInstructorId}
-                  onChange={(e) => setSelectedInstructorId(e.target.value)}
-                  className="w-full bg-[#f8f9fa] border border-slate-200 rounded-xl p-2.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0e0447]/30"
-                >
-                  {instructors
-                    .filter((i) => i.departmentCode === activeOfferModalReq.supplyingDept)
-                    .map((inst) => {
-                      const avail = inst.maxWeeklyWorkload - (inst.committedHours + inst.heldHours);
-                      const isQual = inst.qualifications.includes(activeOfferModalReq.requiredQualification);
-                      return (
-                        <option key={inst.id} value={inst.id}>
-                          {inst.name} ({avail.toFixed(1)}h free) {isQual ? '★ Qualified' : ''}
-                        </option>
-                      );
-                    })}
-                </select>
+                <h3 className="font-bold text-base text-slate-900">
+                  Provide Instructor & Available Hours to {activeOfferModalReq.requestingDept}
+                </h3>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  For <strong>{activeOfferModalReq.courseCode}</strong> ({activeOfferModalReq.courseTitle}) • Section{' '}
+                  <strong>{activeOfferModalReq.sectionName}</strong>
+                </p>
+              </div>
+              <button
+                onClick={() => setActiveOfferModalReq(null)}
+                className="text-slate-400 hover:text-slate-600 text-lg leading-none cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-4 mt-4 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-slate-700 font-semibold mb-1">
+                    Select {activeOfferModalReq.supplyingDept} Instructor:
+                  </label>
+                  <select
+                    value={selectedInstructorId}
+                    onChange={(e) => handleInstructorChange(e.target.value)}
+                    className="w-full bg-[#f8f9fa] border border-slate-200 rounded-xl p-2.5 text-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-[#0e0447]/30"
+                  >
+                    {instructors
+                      .filter((i) => i.departmentCode === activeOfferModalReq.supplyingDept)
+                      .map((inst) => {
+                        const avail = inst.maxWeeklyWorkload - (inst.committedHours + inst.heldHours);
+                        return (
+                          <option key={inst.id} value={inst.id}>
+                            {inst.name} ({avail.toFixed(1)}h workload free)
+                          </option>
+                        );
+                      })}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-slate-700 font-semibold mb-1">
+                    Workload Hours Allocated ({remainingCap.toFixed(1)}h available):
+                  </label>
+                  <input
+                    type="number"
+                    min="0.5"
+                    step="0.5"
+                    max={Math.max(0.5, remainingCap)}
+                    value={offeredHours}
+                    onChange={(e) => setOfferedHours(parseFloat(e.target.value) || 0)}
+                    className="w-full bg-[#f8f9fa] border border-slate-200 rounded-xl p-2.5 text-slate-900 font-bold text-[#0e0447] focus:outline-none focus:ring-2 focus:ring-[#0e0447]/30"
+                  />
+                </div>
               </div>
 
-              {selectedInstObj && (
-                <div className="p-3 bg-[#f8f9fa] rounded-xl border border-slate-200 space-y-1.5 text-slate-700">
-                  <div className="flex justify-between">
-                    <span className="text-slate-500">Instructor:</span>
-                    <span className="font-bold text-slate-900">
-                      {selectedInstObj.name} ({selectedInstObj.departmentCode})
+              {/* Interactive Weekly Availability Picker excluding Supplying Dept busy slots */}
+              <div className="bg-[#f8f9fa] border border-slate-200 rounded-xl p-3.5">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2.5">
+                  <div>
+                    <span className="font-bold text-slate-800 block">
+                      Conflict-Free Available Time Slots to Share with {activeOfferModalReq.requestingDept}
+                    </span>
+                    <span className="text-[11px] text-slate-500">
+                      Slots occupied by {activeOfferModalReq.supplyingDept} classes are automatically locked to prevent conflicts.
                     </span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-500">Weekly Quota Cap:</span>
-                    <span>{selectedInstObj.maxWeeklyWorkload} hrs</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-500">Currently Committed / Held:</span>
-                    <span>
-                      {selectedInstObj.committedHours}h committed / {selectedInstObj.heldHours}h held
-                    </span>
-                  </div>
-                  <div className="flex justify-between pt-1 border-t border-slate-200">
-                    <span className="font-bold text-slate-800">Available Headroom:</span>
-                    <span className={`font-bold ${remainingCap >= offeredHours ? 'text-emerald-600' : 'text-rose-600'}`}>
-                      {remainingCap.toFixed(1)} hrs
-                    </span>
+                  <div className="flex items-center space-x-2">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedSlotKeys(computeFreeSlotKeys(selectedInstructorId))}
+                      className="px-2 py-1 rounded-lg bg-white border border-slate-200 text-[11px] font-semibold text-[#0e0447] hover:bg-slate-50 cursor-pointer"
+                    >
+                      Select All Free
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedSlotKeys(new Set())}
+                      className="px-2 py-1 rounded-lg bg-white border border-slate-200 text-[11px] font-semibold text-slate-600 hover:bg-slate-50 cursor-pointer"
+                    >
+                      Clear
+                    </button>
                   </div>
                 </div>
-              )}
 
-              <div>
-                <label className="block text-slate-700 font-semibold mb-1">
-                  Hours to Offer & Hold in Escrow:
-                </label>
-                <input
-                  type="number"
-                  min="0.5"
-                  step="0.5"
-                  value={offeredHours}
-                  onChange={(e) => setOfferedHours(parseFloat(e.target.value) || 0)}
-                  className="w-full bg-[#f8f9fa] border border-slate-200 rounded-xl p-2.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0e0447]/30"
-                />
+                <div className="overflow-x-auto">
+                  <table className="w-full text-[10px] border-collapse">
+                    <thead>
+                      <tr>
+                        <th className="p-1 text-left text-slate-500 font-bold">Time</th>
+                        {DAYS.map((d) => (
+                          <th key={d.index} className="p-1 text-center text-slate-700 font-bold">
+                            {d.short}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {SLOTS.map((sl) => (
+                        <tr key={sl.slot} className={sl.slot === 5 ? 'border-t-2 border-slate-300' : ''}>
+                          <td className="p-1 font-mono text-slate-500 whitespace-nowrap">
+                            {sl.label}
+                          </td>
+                          {DAYS.map((d) => {
+                            const key = slotKey(d.index, sl.slot);
+                            const busyLabel = instructorBusyMap.get(key);
+                            const isSelected = selectedSlotKeys.has(key);
+
+                            return (
+                              <td key={d.index} className="p-0.5 text-center">
+                                {busyLabel ? (
+                                  <div
+                                    title={`Busy in home department: ${busyLabel}`}
+                                    className="px-1.5 py-1 rounded bg-rose-50 text-rose-700 border border-rose-200 font-semibold truncate max-w-[95px] mx-auto cursor-not-allowed"
+                                  >
+                                    🔒 Busy
+                                  </div>
+                                ) : (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleToggleSlot(d.index, sl.slot)}
+                                    className={`w-full px-1.5 py-1 rounded font-semibold border transition-all cursor-pointer ${
+                                      isSelected
+                                        ? 'bg-emerald-50 text-emerald-800 border-emerald-300 shadow-2xs'
+                                        : 'bg-white text-slate-400 border-slate-200 hover:border-[#0e0447]/30'
+                                    }`}
+                                  >
+                                    {isSelected ? '✓ Free' : 'Off'}
+                                  </button>
+                                )}
+                              </td>
+                            );
+                          })}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="mt-2 flex items-center justify-between text-[11px] text-slate-600">
+                  <span>
+                    Busy in {activeOfferModalReq.supplyingDept}:{' '}
+                    <strong className="text-rose-700">{instructorBusyMap.size} slots locked</strong>
+                  </span>
+                  <span>
+                    Shared Available Windows:{' '}
+                    <strong className="text-emerald-700">{selectedSlotKeys.size} slots</strong>
+                  </span>
+                </div>
               </div>
 
               {isOverCapacity && (
                 <div className="flex items-center space-x-2 p-2.5 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs">
                   <AlertTriangle className="w-4 h-4 flex-shrink-0" />
                   <span>
-                    Cannot offer {offeredHours}h: exceeds instructor available capacity (
-                    {remainingCap.toFixed(1)}h).
+                    Cannot allocate {offeredHours}h: exceeds instructor remaining workload capacity ({remainingCap.toFixed(1)}h).
                   </span>
+                </div>
+              )}
+
+              {selectedSlotKeys.size === 0 && (
+                <div className="flex items-center space-x-2 p-2.5 bg-amber-50 border border-amber-200 rounded-xl text-amber-800 text-xs">
+                  <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+                  <span>Please select at least one available time slot for the requesting department.</span>
                 </div>
               )}
             </div>
@@ -721,11 +915,11 @@ export const CoordinationHub: React.FC<CoordinationHubProps> = ({
                 Cancel
               </button>
               <button
-                disabled={isOverCapacity || offeredHours <= 0}
+                disabled={isOverCapacity || offeredHours <= 0 || selectedSlotKeys.size === 0}
                 onClick={handleSubmitOffer}
                 className="btn-navy-gradient px-4 py-2 rounded-xl text-xs font-bold disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-xs cursor-pointer"
               >
-                Lock Capacity & Submit Offer
+                Lock Hours & Provide Instructor
               </button>
             </div>
           </div>

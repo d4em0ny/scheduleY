@@ -32,7 +32,7 @@ class InterdeptRequestBase(BaseModel):
     supplying_dept_id: uuid.UUID
     offering_id: uuid.UUID
     course_component_id: uuid.UUID
-    required_hours: float = Field(..., gt=0)
+    required_hours: Optional[float] = Field(default=None, gt=0)
     required_qualification_tag: Optional[str] = None
     remarks: Optional[str] = None
 

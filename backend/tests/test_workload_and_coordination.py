@@ -268,3 +268,25 @@ async def test_offer_rejection_releases_hold(db_session: AsyncSession, sample_ac
     _, held = await WorkloadService.calculate_workload_breakdown(db_session, prof.id)
     assert held == 0.0
 
+
+@pytest.mark.asyncio
+async def test_create_request_without_explicit_hours(db_session: AsyncSession, sample_academic_data):
+    data = sample_academic_data
+    cs_dept = data["cs_dept"]
+    math_dept = data["math_dept"]
+    sem = data["semester"]
+    offering = data["offering"]
+    comp = data["component"]
+
+    req = await CoordinationService.create_request(
+        session=db_session,
+        semester_id=sem.id,
+        requesting_dept_id=cs_dept.id,
+        supplying_dept_id=math_dept.id,
+        offering_id=offering.id,
+        course_component_id=comp.id,
+        dept_code="CS",
+    )
+    assert req.required_hours == comp.weekly_contact_hours
+    assert req.status == InterdeptStatus.SUBMITTED.value
+

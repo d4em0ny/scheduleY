@@ -78,11 +78,17 @@ export interface ScheduledSession {
   slotDuration: number;
 }
 
+export interface TimeSlot {
+  dayOfWeek: number; // 1 = Mon .. 5 = Fri
+  slot: number; // 1..4 (08:00-12:00), 5..7 (14:00-17:00)
+}
+
 export interface InterdeptOffer {
   id: string;
   instructorId: string;
   instructorName: string;
   offeredHours: number;
+  availableSlots: TimeSlot[];
   expiresAt: string;
   isActiveHold: boolean;
 }
@@ -94,10 +100,10 @@ export interface InterdeptRequest {
   supplyingDept: string;
   courseCode: string;
   courseTitle: string;
-  componentType: RoomCategory;
+  componentType?: RoomCategory;
   sectionName: string;
-  requiredHours: number;
-  requiredQualification: string;
+  requiredHours?: number;
+  requiredQualification?: string;
   status: InterdeptStatus;
   remarks?: string;
   createdAt: string;
@@ -129,10 +135,12 @@ export interface CourseOfferingItem {
   componentType: RoomCategory;
   batchYear: number; // 2024 (Year 1), 2023 (Year 2), 2022 (Year 3), 2021 (Year 4)
   yearLabel: 'Year 1' | 'Year 2' | 'Year 3' | 'Year 4';
+  semester: 1 | 2;
   sectionName: string;
   assignedRoomNumber: string;
   assignedInstructorName?: string;
   assignedInstructorId?: string;
+  allowedInstructorSlots?: TimeSlot[];
   requiredQualification: string;
 }
 
