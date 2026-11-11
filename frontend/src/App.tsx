@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import hawassaLogo from './assets/hawassa-logo.png';
 import { Header } from './components/Header';
 import { TimetableGrid } from './components/TimetableGrid';
 import { FacultyList } from './components/FacultyList';
@@ -429,9 +430,16 @@ export function App() {
       </main>
 
       <footer className="bg-white border-t border-slate-200 text-xs text-slate-500 py-4 text-center">
-        <p>
-          scheduleY • University Intelligent Scheduling & Resource Allocation System • Department Architecture & Timetabling Core
-        </p>
+        <div className="inline-flex items-center justify-center space-x-2">
+          <img
+            src={hawassaLogo}
+            alt="Hawassa University"
+            className="w-5 h-5 rounded-full object-contain"
+          />
+          <p>
+            scheduleY • Hawassa University Intelligent Scheduling & Resource Allocation System • Department Architecture & Timetabling Core
+          </p>
+        </div>
       </footer>
     </div>
   );

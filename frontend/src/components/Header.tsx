@@ -14,6 +14,7 @@ import {
   BookOpen,
 } from 'lucide-react';
 import type { Department, User, ActiveNavTab } from '../types';
+import hawassaLogo from '../assets/hawassa-logo.png';
 
 interface HeaderProps {
   departments: Department[];
@@ -60,16 +61,18 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex items-center justify-between h-16">
           {/* Logo & Identity */}
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#0088D9] via-[#3C8DBC] to-[#00C0EF] flex items-center justify-center font-black text-xl text-white shadow-xs">
-              Y
-            </div>
+            <img
+              src={hawassaLogo}
+              alt="Hawassa University Logo"
+              className="w-11 h-11 rounded-full object-contain bg-white border border-slate-200/90 shadow-xs p-0.5 flex-shrink-0"
+            />
             <div>
               <div className="flex items-center space-x-2">
                 <span className="font-extrabold text-lg tracking-tight text-slate-900">
                   scheduleY
                 </span>
                 <span className="text-[10px] px-2 py-0.5 rounded-full badge-primary-soft font-bold">
-                  Academic Platform
+                  Hawassa University
                 </span>
               </div>
               <p className="text-[11px] text-slate-500 hidden sm:block font-medium">
