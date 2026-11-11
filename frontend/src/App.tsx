@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import hawassaLogo from './assets/hawassa-logo.png';
 import { Header } from './components/Header';
+import { Sidebar } from './components/Sidebar';
 import { TimetableGrid } from './components/TimetableGrid';
 import { FacultyList } from './components/FacultyList';
 import { CourseCurriculumPanel } from './components/CourseCurriculumPanel';
@@ -32,6 +33,7 @@ export function App() {
   const [currentUser, setCurrentUser] = useState<User>(DEMO_USERS[0]); // Default: Dr. Alan Turing (CS Chair)
   const [selectedDept, setSelectedDept] = useState<string>(DEMO_USERS[0].departmentCode || 'ALL');
   const [activeTab, setActiveTab] = useState<ActiveNavTab>('timetable');
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   const [instructors, setInstructors] = useState<Instructor[]>(INITIAL_INSTRUCTORS);
   const [courses, setCourses] = useState<CourseOfferingItem[]>(INITIAL_COURSES);
@@ -354,93 +356,105 @@ export function App() {
   ).length;
 
   return (
-    <div className="min-h-screen bg-[#D2D6DE] text-slate-800 flex flex-col font-sans antialiased selection:bg-[#0088D9] selection:text-white">
-      <Header
-        departments={DEPARTMENTS}
-        selectedDept={selectedDept}
-        onSelectDept={setSelectedDept}
+    <div className="min-h-screen bg-[#D2D6DE] text-slate-800 flex font-sans antialiased selection:bg-[#0088D9] selection:text-white">
+      {/* Left Navigation Sidebar */}
+      <Sidebar
         activeTab={activeTab}
         onSelectTab={setActiveTab}
         pendingRequestsCount={pendingRequestsCount}
         currentUser={currentUser}
-        onSelectUser={handleSelectUser}
-        allUsers={DEMO_USERS}
+        isMobileOpen={isMobileSidebarOpen}
+        onCloseMobile={() => setIsMobileSidebarOpen(false)}
       />
 
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {activeTab === 'timetable' && (
-          <TimetableGrid
-            sessions={sessions}
-            sections={SECTIONS}
-            instructors={instructors}
-            currentDept={selectedDept}
-            onGenerateSchedule={handleGenerateSchedule}
-            isGenerating={isGeneratingSchedule}
-            generationMetrics={generationMetrics}
-          />
-        )}
+      {/* Right Main Content Column */}
+      <div className="flex-1 flex flex-col min-w-0">
+        <Header
+          departments={DEPARTMENTS}
+          selectedDept={selectedDept}
+          onSelectDept={setSelectedDept}
+          activeTab={activeTab}
+          currentUser={currentUser}
+          onSelectUser={handleSelectUser}
+          allUsers={DEMO_USERS}
+          onOpenMobileMenu={() => setIsMobileSidebarOpen(true)}
+        />
 
-        {activeTab === 'courses' && (
-          <CourseCurriculumPanel
-            courses={courses}
-            sections={SECTIONS}
-            currentDept={selectedDept}
-            onAddCourse={handleAddCourse}
-          />
-        )}
+        <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          {activeTab === 'timetable' && (
+            <TimetableGrid
+              sessions={sessions}
+              sections={SECTIONS}
+              instructors={instructors}
+              currentDept={selectedDept}
+              onGenerateSchedule={handleGenerateSchedule}
+              isGenerating={isGeneratingSchedule}
+              generationMetrics={generationMetrics}
+            />
+          )}
 
-        {activeTab === 'faculty' && (
-          <FacultyList
-            instructors={instructors}
-            currentDept={selectedDept}
-            departments={DEPARTMENTS}
-            onAddInstructor={handleAddInstructor}
-          />
-        )}
+          {activeTab === 'courses' && (
+            <CourseCurriculumPanel
+              courses={courses}
+              sections={SECTIONS}
+              currentDept={selectedDept}
+              onAddCourse={handleAddCourse}
+            />
+          )}
 
-        {activeTab === 'coordination' && (
-          <CoordinationHub
-            requests={requests}
-            instructors={instructors}
-            sessions={sessions}
-            courses={courses}
-            currentDept={selectedDept}
-            departments={DEPARTMENTS}
-            onAcceptOffer={handleAcceptOffer}
-            onRejectOffer={handleRejectOffer}
-            onMakeOffer={handleMakeOffer}
-            onCreateRequest={handleCreateRequest}
-          />
-        )}
+          {activeTab === 'faculty' && (
+            <FacultyList
+              instructors={instructors}
+              currentDept={selectedDept}
+              departments={DEPARTMENTS}
+              onAddInstructor={handleAddInstructor}
+            />
+          )}
 
-        {activeTab === 'workload' && (
-          <WorkloadDashboard
-            instructors={instructors}
-            currentDept={selectedDept}
-          />
-        )}
+          {activeTab === 'coordination' && (
+            <CoordinationHub
+              requests={requests}
+              instructors={instructors}
+              sessions={sessions}
+              courses={courses}
+              currentDept={selectedDept}
+              departments={DEPARTMENTS}
+              onAcceptOffer={handleAcceptOffer}
+              onRejectOffer={handleRejectOffer}
+              onMakeOffer={handleMakeOffer}
+              onCreateRequest={handleCreateRequest}
+            />
+          )}
 
-        {activeTab === 'allocations' && (
-          <InternalAllocationPanel
-            recommendations={recommendations}
-            onCommitAllocation={handleCommitAllocation}
-            currentDept={selectedDept}
-          />
-        )}
-      </main>
+          {activeTab === 'workload' && (
+            <WorkloadDashboard
+              instructors={instructors}
+              currentDept={selectedDept}
+            />
+          )}
 
-      <footer className="bg-white border-t border-slate-200 text-xs text-slate-500 py-4 text-center">
-        <div className="inline-flex items-center justify-center space-x-2">
-          <img
-            src={hawassaLogo}
-            alt="Hawassa University"
-            className="w-5 h-5 rounded-full object-contain"
-          />
-          <p>
-            scheduleY • Hawassa University Intelligent Scheduling & Resource Allocation System • Department Architecture & Timetabling Core
-          </p>
-        </div>
-      </footer>
+          {activeTab === 'allocations' && (
+            <InternalAllocationPanel
+              recommendations={recommendations}
+              onCommitAllocation={handleCommitAllocation}
+              currentDept={selectedDept}
+            />
+          )}
+        </main>
+
+        <footer className="bg-white border-t border-slate-200 text-xs text-slate-500 py-4 px-4 text-center">
+          <div className="inline-flex items-center justify-center space-x-2">
+            <img
+              src={hawassaLogo}
+              alt="Hawassa University"
+              className="w-5 h-5 rounded-full object-contain"
+            />
+            <p>
+              scheduleY • Hawassa University Intelligent Scheduling & Resource Allocation System • Department Architecture & Timetabling Core
+            </p>
+          </div>
+        </footer>
+      </div>
     </div>
   );
 }
